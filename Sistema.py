@@ -91,7 +91,7 @@ while True:
                     print(mañana)
 
             # TARDE
-            elif 6 >= h >= 12:
+            elif 18 >= h >= 12:
                 cv2.polylines(frame, [pts], True, (255, 255, 0), 5)
 
                 # Guardamos ID, fecha y hora
