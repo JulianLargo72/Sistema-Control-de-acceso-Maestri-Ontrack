@@ -4,6 +4,7 @@ import numpy as np
 from datetime import datetime
 import openpyxl as xl
 
+
 cap = cv2.VideoCapture(0)
 
 mañana = []
@@ -54,6 +55,8 @@ while True:
 
         # Numero
         num = info[2:]
+        
+        nombre = info.split('-')[1].strip()
 
         # Extraemos coordenadas
         pts = np.array([codes.polygon], np.int32)
@@ -75,11 +78,17 @@ while True:
 
                 # Guardamos ID, fecha y hora
                 if codigo not in mañana:
-                    pos = len(mañana)
                     mañana.append(codigo)
 
                     hojam = wb.create_sheet("Mañana")
-                    hojam.append([codigo, fecha, texth])  # Agregamos ID, fecha y hora
+
+                    # Añadimos encabezados si la hoja está vacía
+                    if hojam.max_row == 1:
+                        hojam.append(["ID", "Nombre", "Fecha", "Hora"])  # Encabezados
+
+                    codigo_despues_del_primer_digito = info.split('-')[0][2:].strip()
+
+                    hojam.append([codigo_despues_del_primer_digito, nombre, fecha, texth])  # Agregamos ID, fecha y hora
                     wb.save(f"{nomar}.xlsx")
 
                     cv2.putText(frame, f"{letr}0{num}", (xi - 15, yi - 15), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 55, 0), 2)
@@ -90,6 +99,7 @@ while True:
                     cv2.putText(frame, "Fue registrado", (xi - 65, yi - 15), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
                     print(mañana)
 
+
             # TARDE
             elif 18 >= h >= 12:
                 cv2.polylines(frame, [pts], True, (255, 255, 0), 5)
@@ -99,7 +109,14 @@ while True:
                     tarde.append(codigo)
 
                     hojat = wb.create_sheet("Tarde")
-                    hojat.append([codigo, fecha, texth])  # Agregamos ID, fecha y hora
+
+                    # Añadimos encabezados si la hoja está vacía
+                    if hojat.max_row == 1:
+                        hojat.append(["ID", "Nombre", "Fecha", "Hora"])  # Encabezados
+                    
+                    codigo_despues_del_primer_digito = info.split('-')[0][2:].strip()
+
+                    hojat.append([codigo_despues_del_primer_digito, nombre, fecha, texth])
                     wb.save(f"{nomar}.xlsx")
 
                     cv2.putText(frame, f"{letr}0{num}", (xi - 15, yi - 15), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 55, 0), 2)
@@ -110,7 +127,7 @@ while True:
                     cv2.putText(frame, "Fue registrado", (xi - 65, yi - 15), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
             
             # NOCHE
-            if 23 >= h >= 19 or (0 <= h <= 5):
+            if 23 >= h >= 18:
                 cv2.polylines(frame, [pts], True, (255, 255, 0), 5)
 
                 # Guardamos ID, fecha y hora
@@ -118,7 +135,14 @@ while True:
                     noche.append(codigo)
 
                     hojan = wb.create_sheet("Noche")
-                    hojan.append([codigo, fecha, texth])  # Agregamos ID, fecha y hora
+
+                    # Añadimos encabezados si la hoja está vacía
+                    if hojan.max_row == 1:
+                        hojan.append(["ID", "Nombre", "Fecha", "Hora"])  # Encabezados
+                        
+                    codigo_despues_del_primer_digito = info.split('-')[0][2:].strip()
+
+                    hojan.append([codigo_despues_del_primer_digito, nombre, fecha, texth])  # Agregamos ID, fecha y hora
                     wb.save(f"{nomar}.xlsx")
 
                     cv2.putText(frame, f"{letr}0{num}", (xi - 15, yi - 15), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 55, 0), 2)
@@ -128,6 +152,7 @@ while True:
                     cv2.putText(frame, f"El ID {codigo}", (xi - 65, yi - 45), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
                     cv2.putText(frame, "Fue registrado", (xi - 65, yi - 15), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
                     print(noche)
+
 
     # Mostramos FPS
     cv2.imshow("SISTEMA CONTROL DE ACCESO", frame)
