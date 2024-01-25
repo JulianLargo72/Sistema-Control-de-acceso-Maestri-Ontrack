@@ -1,27 +1,46 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generador de Códigos QR</title>
+  <meta charset="UTF-8">
+  <title>Bootstrap Navbar Template</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css">
 </head>
 <body>
-    <h1>Generador de Códigos QR</h1>
-    
-    <video id="video" autoplay></video>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="#">Navbar</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            navigator.mediaDevices.getUserMedia({ video: true })
-                .then(function(stream) {
-                    // Acceso a la cámara exitoso
-                    document.getElementById('video').srcObject = stream;
-                })
-                .catch(function(error) {
-                    // Error al acceder a la cámara
-                    console.error('Error al acceder a la cámara:', error);
-                });
-        });
-    </script>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Contact</a>
+          </li>
+        </ul>
+        <form class="form-inline my-2 my-lg-0">
+          <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        </form>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h1>This is the main content of the page</h1>
+    <p>This is some text that you can use to test out your website. You can add any content you want to this page, such as images, videos, or other HTML elements.</p>
+  </div>
+
+  <a href="/generar" class="btn btn-primary">Generar</a>
+
+  <a href="/leer" class="btn btn-primary">Leer</a>
+
 </body>
 </html>

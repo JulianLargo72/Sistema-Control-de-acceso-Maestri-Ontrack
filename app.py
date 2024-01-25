@@ -33,4 +33,4 @@ def index():
     return render_template('generar.html')
 
 if __name__ == '__main__':
-    app.run(host='192.168.0.44', port=5000, debug=True)
+    app.run(debug=True)
