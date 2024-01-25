@@ -1,4 +1,10 @@
 from flask import Flask, render_template, request
+import cv2
+from pyzbar.pyzbar import decode
+import numpy as np
+from datetime import datetime
+import openpyxl as xl
+import time
 import pyqrcode
 import os
 
@@ -20,11 +26,11 @@ def index():
             nombre = request.form['nombre']
             qr_path = generar_qr(identificacion, nombre)
             mensaje = f"QR generado para la identificación {identificacion} y el nombre {nombre}"
-            return render_template('index.html', mensaje=mensaje, qr_path=qr_path)
+            return render_template('generar.html', mensaje=mensaje, qr_path=qr_path)
         except ValueError:
             mensaje = "Por favor, ingrese un número entero válido."
-            return render_template('index.html', mensaje=mensaje)
-    return render_template('index.html')
+            return render_template('generar.html', mensaje=mensaje)
+    return render_template('generar.html')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='192.168.0.44', port=5000, debug=True)

@@ -7,22 +7,21 @@
 </head>
 <body>
     <h1>Generador de Códigos QR</h1>
-    <form method="post">
-        <label for="identificacion">Identificación:</label>
-        <input type="text" name="identificacion" required>
-        <br>
-        <label for="nombre">Nombre:</label>
-        <input type="text" name="nombre" required>
-        <br>
-        <button type="submit">Generar QR</button>
-    </form>
+    
+    <video id="video" autoplay></video>
 
-    {% if mensaje %}
-        <p>{{ mensaje }}</p>
-    {% endif %}
-
-    {% if qr_path %}
-        <img src="{{ qr_path }}" alt="Código QR">
-    {% endif %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(function(stream) {
+                    // Acceso a la cámara exitoso
+                    document.getElementById('video').srcObject = stream;
+                })
+                .catch(function(error) {
+                    // Error al acceder a la cámara
+                    console.error('Error al acceder a la cámara:', error);
+                });
+        });
+    </script>
 </body>
 </html>
