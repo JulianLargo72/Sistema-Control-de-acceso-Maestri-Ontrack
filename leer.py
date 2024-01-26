@@ -10,9 +10,21 @@ import time
 
 app = Flask(__name__)
 
-cap = cv2.VideoCapture(1)  # Inicializar la cámara
+
 mañana = []
 tiempo_ultima_registro = {}
+
+# Diccionario para mapear el primer carácter al área correspondiente
+areas = {
+    'A': 'Administrativa',
+    'G': 'Gerencial',
+    'C': 'Comercial',
+    'O': 'Operaciones'
+}
+
+def obtener_area(codigo):
+    primer_caracter = codigo[0]
+    return areas.get(primer_caracter, 'Desconocida')
 
 def infhora():
     inf = datetime.now()
@@ -38,12 +50,12 @@ except FileNotFoundError:
     # Si el archivo no existe, crear uno nuevo en la nueva carpeta
     wb = xl.Workbook()
     hojam = wb.create_sheet("Actual")
-    hojam.append(["ID", "Nombre", "Fecha", "Hora"])  # Encabezados
+    hojam.append(["ID", "Nombre", "Area", "Fecha", "Hora"])  # Encabezados
     # Guardar en la nueva carpeta
     wb.save(ruta_archivo_excel)
 
 def generate_frames():
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(0)
     while True:
         ret, frame = cap.read()
 
@@ -66,6 +78,9 @@ def generate_frames():
             xi, yi = codes.rect.left, codes.rect.top
             pts = pts.reshape((-1, 1, 2))
             codigo = letr + num
+            
+            # Imprimir el valor del código QR en la consola
+            print("Valor del código QR:", codigo)
 
             if 6 >= diasem >= 0:
                 cv2.polylines(frame, [pts], True, (255, 255, 0), 5)
@@ -73,9 +88,12 @@ def generate_frames():
                 if codigo not in mañana or (codigo in mañana and time.time() - tiempo_ultima_registro.get(codigo, 0) > 60):
                     mañana.append(codigo)
                     tiempo_ultima_registro[codigo] = time.time()
+                    
+                    # Obtener el área correspondiente al primer carácter del código
+                    area = obtener_area(codigo)
 
                     codigo_despues_del_primer_digito = info.split('-')[0][2:].strip()
-                    hojam.append([codigo_despues_del_primer_digito, nombre, fecha, texth])
+                    hojam.append([codigo_despues_del_primer_digito, nombre, area, fecha, texth])
                     wb.save(ruta_archivo_excel)
 
                     cv2.putText(frame, f"{letr}0{num}", (xi - 15, yi - 15), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 55, 0), 2)
@@ -100,4 +118,4 @@ def video_feed():
     return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='192.168.1.53', port=5000, debug=True)

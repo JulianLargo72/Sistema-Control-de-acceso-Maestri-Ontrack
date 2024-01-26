@@ -8,6 +8,15 @@
 <body>
     <h1>Generador de Códigos QR</h1>
     <form method="post">
+        <label for="prefijo">Area:</label>
+        <select name="prefijo" required>
+            <option value="" disabled selected>Seleccione una opción</option>
+            <option value="A">Administrativa</option>
+            <option value="G">Gerencial</option>
+            <option value="C">Comercial</option>
+            <option value="O">Operaciones</option>
+        </select>
+        <br>
         <label for="identificacion">Identificación:</label>
         <input type="text" name="identificacion" required>
         <br>
