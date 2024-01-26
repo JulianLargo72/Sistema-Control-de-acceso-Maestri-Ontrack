@@ -1,16 +1,16 @@
 import os
-
-from flask import Flask, render_template, Response
+from flask import Flask, render_template, request, Response
 import cv2
 from pyzbar.pyzbar import decode
 import numpy as np
 from datetime import datetime
 import openpyxl as xl
 import time
+import pyqrcode
 
 app = Flask(__name__)
 
-
+cap = cv2.VideoCapture(1)  # Inicializar la cámara
 mañana = []
 tiempo_ultima_registro = {}
 
@@ -55,9 +55,15 @@ except FileNotFoundError:
     wb.save(ruta_archivo_excel)
 
 def generate_frames():
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(1)
     while True:
         ret, frame = cap.read()
+        
+        # INTERFAZ
+        # Texto
+        cv2.putText(frame, 'Ubica el QR code', (160, 80), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        # Ubicanos el rectangulo en las zonas
+        cv2.rectangle(frame, (170, 100), (470, 400), (0, 255, 0), 2)
 
         hora, fecha = infhora()
         diasem = datetime.today().weekday()
@@ -109,13 +115,48 @@ def generate_frames():
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n\r\n')
 
-@app.route('/')
+@app.route('/leer')
 def index():
     return render_template('leer.html')
+
+@app.route('/')
+def inicio():
+    return render_template('index.html')
+
+def generar_qr(prefijo, identificacion, nombre):
+    if not prefijo.isalpha():
+        raise ValueError("El prefijo debe contener solo letras.")
+    
+    ascii_prefijo = str(ord(prefijo))  # Convertir letra a código ASCII
+    id_completo = ascii_prefijo + str(identificacion)
+    info_completa = f"{id_completo} - {nombre}"
+    qr = pyqrcode.create(info_completa, error='L')
+    qr_path = f'static/qr_images/{prefijo}{identificacion}.png'
+    qr.png(qr_path, scale=6)
+    return qr_path
+
+@app.route('/generar', methods=['GET', 'POST'])
+def generar():
+    if request.method == 'POST':
+        try:
+            prefijo = request.form['prefijo']
+            
+            if not prefijo.isalpha():
+                raise ValueError("El prefijo debe contener solo letras.")
+            
+            identificacion = int(request.form['identificacion'])
+            nombre = request.form['nombre']
+            qr_path = generar_qr(prefijo, identificacion, nombre)
+            mensaje = f"QR generado para la identificación {identificacion} y el nombre {nombre}"
+            return render_template('generar.html', mensaje=mensaje, qr_path=qr_path)
+        except ValueError as e:
+            mensaje = str(e)
+            return render_template('generar.html', mensaje=mensaje)
+    return render_template('generar.html')
 
 @app.route('/video_feed')
 def video_feed():
     return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == '__main__':
-    app.run(host='192.168.1.53', port=5000, debug=True)
+    app.run(host='192.168.0.44', port=5000, debug=True)
