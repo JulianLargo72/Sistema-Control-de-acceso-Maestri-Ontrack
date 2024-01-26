@@ -10,7 +10,6 @@ import pyqrcode
 
 app = Flask(__name__)
 
-cap = cv2.VideoCapture(1)  # Inicializar la cámara
 mañana = []
 tiempo_ultima_registro = {}
 
