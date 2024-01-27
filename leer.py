@@ -115,12 +115,13 @@ def generate_frames():
                b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n\r\n')
 
 @app.route('/leer')
-def index():
+def mostrar_leer():
     return render_template('leer.html')
 
 @app.route('/')
 def inicio():
     return render_template('index.html')
+
 
 def generar_qr(prefijo, identificacion, nombre):
     if not prefijo.isalpha():
@@ -157,5 +158,40 @@ def generar():
 def video_feed():
     return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
+@app.route('/registros', methods=['GET'])
+def mostrar_registros():
+    fecha_filtro = request.args.get('fecha', datetime.today().strftime('%Y-%m-%d'))
+    carpeta_registros = 'registros_excel'
+    
+    registros = []
+
+    for archivo_excel in os.listdir(carpeta_registros):
+        ruta_archivo_excel = os.path.join(carpeta_registros, archivo_excel)
+
+        try:
+            wb = xl.load_workbook(ruta_archivo_excel)
+            hoja_actual = wb['Actual']
+
+            for row in hoja_actual.iter_rows(min_row=2, values_only=True):
+                registro = {
+                    'ID': row[0],
+                    'Nombre': row[1],
+                    'Area': row[2],
+                    'Fecha': row[3],
+                    'Hora': row[4]
+                }
+
+                # Filtra los registros por fecha si se proporciona una fecha de filtro
+                if fecha_filtro:
+                    if registro['Fecha'] == fecha_filtro:
+                        registros.append(registro)
+                else:
+                    registros.append(registro)
+
+        except Exception as e:
+            print(f"Error al procesar el archivo {archivo_excel}: {e}")
+
+    return render_template('registros.html', registros=registros, fecha_actual=datetime.today().strftime('%Y-%m-%d'))
+
 if __name__ == '__main__':
-    app.run(host='192.168.0.44', port=5000, debug=True)
+    app.run(host='192.168.1.53', port=5000, debug=True)
