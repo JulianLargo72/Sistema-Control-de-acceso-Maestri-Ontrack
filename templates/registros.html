@@ -83,16 +83,20 @@
                     <th>Area</th>
                     <th>Fecha</th>
                     <th>Hora</th>
+                    <th>Hora entrada</th>
+                    <th>Hora Salida</th>
                 </tr>
             </thead>
             <tbody>
                 {% for registro in registros %}
                     <tr>
-                        <td>{{ registro['ID'] }}</td>
+                        <td>{{ registro['Identificacion'] }}</td>
                         <td>{{ registro['Nombre'] }}</td>
                         <td>{{ registro['Area'] }}</td>
                         <td>{{ registro['Fecha'] }}</td>
                         <td>{{ registro['Hora'] }}</td>
+                        <td>{{ registro['Entrada'] }}</td>
+                        <td>{{ registro['Salida'] }}</td>
                     </tr>
                 {% endfor %}
             </tbody>

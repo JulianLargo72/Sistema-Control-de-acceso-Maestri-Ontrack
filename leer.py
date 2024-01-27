@@ -49,7 +49,7 @@ except FileNotFoundError:
     # Si el archivo no existe, crear uno nuevo en la nueva carpeta
     wb = xl.Workbook()
     hojam = wb.create_sheet("Actual")
-    hojam.append(["ID", "Nombre", "Area", "Fecha", "Hora"])  # Encabezados
+    hojam.append(["Identificacion", "Nombre", "Area", "Fecha", "Hora Escaneo", "Hora Entrada", "Hora Salida"])  # Encabezados
     # Guardar en la nueva carpeta
     wb.save(ruta_archivo_excel)
 
@@ -93,20 +93,38 @@ def generate_frames():
                 if codigo not in mañana or (codigo in mañana and time.time() - tiempo_ultima_registro.get(codigo, 0) > 60):
                     mañana.append(codigo)
                     tiempo_ultima_registro[codigo] = time.time()
-                    
+
                     # Obtener el área correspondiente al primer carácter del código
                     area = obtener_area(codigo)
 
                     codigo_despues_del_primer_digito = info.split('-')[0][2:].strip()
-                    hojam.append([codigo_despues_del_primer_digito, nombre, area, fecha, texth])
+
+                    # Buscar la hora de entrada en el archivo de Excel
+                    hora_entrada = None
+                    for row in hojam.iter_rows(min_row=2, max_col=6, max_row=hojam.max_row):
+                        if row[0].value == codigo_despues_del_primer_digito:
+                            # Verificar que la tupla tenga suficientes elementos antes de intentar acceder al índice 5
+                            if len(row) > 5:
+                                hora_entrada = row[5].value
+                            break
+
+                    if hora_entrada is None:
+                        # Si no se encuentra la hora de entrada, usar la hora actual
+                        hora_entrada = time.strftime("%H:%M:%S", time.localtime())
+
+                    # Agregar la fila al archivo de Excel con código, nombre, área, fecha, hora de entrada y hora de salida
+                    hojam.append([codigo_despues_del_primer_digito, nombre, area, fecha, texth, hora_entrada, time.strftime("%H:%M:%S")])
+
+                    # Guardar los cambios en el archivo de Excel
                     wb.save(ruta_archivo_excel)
+
 
                     cv2.putText(frame, f"{letr}0{num}", (xi - 15, yi - 15), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 55, 0), 2)
                     print("El usuario es accionista de la empresa \nNúmero de Identificación:", codigo, "Fecha de registro:", fecha, "Hora de registro:", texth)
 
                 elif codigo in mañana:
                     cv2.putText(frame, f"El ID {codigo}", (xi - 65, yi - 45), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
-                    cv2.putText(frame, "Fue registrado", (xi - 65, yi - 15), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+                    cv2.putText(frame, "Registro Exitoso", (xi - 65, yi - 15), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
                     print(mañana)
 
         ret, jpeg = cv2.imencode('.jpg', frame)
@@ -174,11 +192,13 @@ def mostrar_registros():
 
             for row in hoja_actual.iter_rows(min_row=2, values_only=True):
                 registro = {
-                    'ID': row[0],
+                    'Identificacion': row[0],
                     'Nombre': row[1],
                     'Area': row[2],
                     'Fecha': row[3],
-                    'Hora': row[4]
+                    'Hora': row[4],
+                    'Entrada': row[5],
+                    'Salida': row[6]
                 }
 
                 # Filtra los registros por fecha si se proporciona una fecha de filtro
