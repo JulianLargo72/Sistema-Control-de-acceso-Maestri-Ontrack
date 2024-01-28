@@ -7,218 +7,211 @@ from datetime import datetime
 import openpyxl as xl
 import time
 import pyqrcode
-from waitress import serve
 
-def create_app():
-    app = Flask(__name__)
+app = Flask(__name__)
 
-    mañana = []
-    tiempo_ultima_registro = {}
+mañana = []
+tiempo_ultima_registro = {}
 
-    # Diccionario para mapear el primer carácter al área correspondiente
-    areas = {
-        'A': 'Administrativa',
-        'G': 'Gerencial',
-        'C': 'Comercial',
-        'O': 'Operaciones'
-    }
+# Diccionario para mapear el primer carácter al área correspondiente
+areas = {
+    'A': 'Administrativa',
+    'G': 'Gerencial',
+    'C': 'Comercial',
+    'O': 'Operaciones'
+}
 
-    def obtener_area(codigo):
-        primer_caracter = codigo[0]
-        return areas.get(primer_caracter, 'Desconocida')
+def obtener_area(codigo):
+    primer_caracter = codigo[0]
+    return areas.get(primer_caracter, 'Desconocida')
 
-    def infhora():
-        inf = datetime.now()
-        fecha = inf.strftime('%Y-%m-%d')
-        hora = inf.strftime('%H:%M:%S')
-        return hora, fecha
+def infhora():
+    inf = datetime.now()
+    fecha = inf.strftime('%Y-%m-%d')
+    hora = inf.strftime('%H:%M:%S')
+    return hora, fecha
 
-    # Especificar el nombre de la nueva carpeta para los registros de Excel
-    nombre_carpeta_registros = 'registros_excel'
+# Especificar el nombre de la nueva carpeta para los registros de Excel
+nombre_carpeta_registros = 'registros_excel'
 
-    # Crear la carpeta si no existe
-    if not os.path.exists(nombre_carpeta_registros):
-        os.makedirs(nombre_carpeta_registros)
+# Crear la carpeta si no existe
+if not os.path.exists(nombre_carpeta_registros):
+    os.makedirs(nombre_carpeta_registros)
 
-    # Construir la ruta completa al archivo Excel en la nueva carpeta
-    hora, fecha_actual = infhora()
-    ruta_archivo_excel = os.path.join(nombre_carpeta_registros, f"{fecha_actual}.xlsx")
+# Construir la ruta completa al archivo Excel en la nueva carpeta
+hora, fecha_actual = infhora()
+ruta_archivo_excel = os.path.join(nombre_carpeta_registros, f"{fecha_actual}.xlsx")
 
-    try:
-        wb = xl.load_workbook(ruta_archivo_excel)
-        hojam = wb["Actual"]
-    except FileNotFoundError:
-        # Si el archivo no existe, crear uno nuevo en la nueva carpeta
-        wb = xl.Workbook()
-        hojam = wb.create_sheet("Actual")
-        hojam.append(["Identificacion", "Nombre", "Area", "Fecha", "Hora Escaneo", "Hora Entrada", "Hora Salida"])  # Encabezados
-        # Guardar en la nueva carpeta
-        wb.save(ruta_archivo_excel)
+try:
+    wb = xl.load_workbook(ruta_archivo_excel)
+    hojam = wb["Actual"]
+except FileNotFoundError:
+    # Si el archivo no existe, crear uno nuevo en la nueva carpeta
+    wb = xl.Workbook()
+    hojam = wb.create_sheet("Actual")
+    hojam.append(["Identificacion", "Nombre", "Area", "Fecha", "Hora Escaneo", "Hora Entrada", "Hora Salida"])  # Encabezados
+    # Guardar en la nueva carpeta
+    wb.save(ruta_archivo_excel)
+
+def generate_frames():
+    cap = cv2.VideoCapture(1)
+    while True:
+        ret, frame = cap.read()
         
+        # INTERFAZ
+        # Texto
+        cv2.putText(frame, 'Ubica el QR code', (160, 80), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        # Ubicanos el rectangulo en las zonas
+        cv2.rectangle(frame, (170, 100), (470, 400), (0, 255, 0), 2)
 
-    def generate_frames():
-        cap = cv2.VideoCapture(1)
-        while True:
-            ret, frame = cap.read()
+        hora, fecha = infhora()
+        diasem = datetime.today().weekday()
+
+        a, me, d = fecha[0:4], fecha[5:7], fecha[8:10]
+        h, m, s = int(hora[0:2]), int(hora[3:5]), int(hora[6:8])
+
+        texth = f"{h}:{m}:{s}"
+        print(texth)
+
+        for codes in decode(frame):
+            info = codes.data.decode('utf-8')
+            tipo = int(info[0:2])
+            letr = chr(tipo)
+            num = info[2:]
+            nombre = info.split('-')[1].strip()
+            pts = np.array([codes.polygon], np.int32)
+            xi, yi = codes.rect.left, codes.rect.top
+            pts = pts.reshape((-1, 1, 2))
+            codigo = letr + num
             
-            # INTERFAZ
-            # Texto
-            cv2.putText(frame, 'Ubica el QR code', (160, 80), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-            # Ubicanos el rectangulo en las zonas
-            cv2.rectangle(frame, (170, 100), (470, 400), (0, 255, 0), 2)
+            # Imprimir el valor del código QR en la consola
+            print("Valor del código QR:", codigo)
 
-            hora, fecha = infhora()
-            diasem = datetime.today().weekday()
+            if 6 >= diasem >= 0:
+                cv2.polylines(frame, [pts], True, (255, 255, 0), 5)
 
-            a, me, d = fecha[0:4], fecha[5:7], fecha[8:10]
-            h, m, s = int(hora[0:2]), int(hora[3:5]), int(hora[6:8])
+                if codigo not in mañana or (codigo in mañana and time.time() - tiempo_ultima_registro.get(codigo, 0) > 60):
+                    mañana.append(codigo)
+                    tiempo_ultima_registro[codigo] = time.time()
 
-            texth = f"{h}:{m}:{s}"
-            print(texth)
+                    # Obtener el área correspondiente al primer carácter del código
+                    area = obtener_area(codigo)
 
-            for codes in decode(frame):
-                info = codes.data.decode('utf-8')
-                tipo = int(info[0:2])
-                letr = chr(tipo)
-                num = info[2:]
-                nombre = info.split('-')[1].strip()
-                pts = np.array([codes.polygon], np.int32)
-                xi, yi = codes.rect.left, codes.rect.top
-                pts = pts.reshape((-1, 1, 2))
-                codigo = letr + num
-                
-                # Imprimir el valor del código QR en la consola
-                print("Valor del código QR:", codigo)
+                    codigo_despues_del_primer_digito = info.split('-')[0][2:].strip()
 
-                if 6 >= diasem >= 0:
-                    cv2.polylines(frame, [pts], True, (255, 255, 0), 5)
+                    # Buscar la hora de entrada en el archivo de Excel
+                    hora_entrada = None
+                    for row in hojam.iter_rows(min_row=2, max_col=6, max_row=hojam.max_row):
+                        if row[0].value == codigo_despues_del_primer_digito:
+                            # Verificar que la tupla tenga suficientes elementos antes de intentar acceder al índice 5
+                            if len(row) > 5:
+                                hora_entrada = row[5].value
+                            break
 
-                    if codigo not in mañana or (codigo in mañana and time.time() - tiempo_ultima_registro.get(codigo, 0) > 60):
-                        mañana.append(codigo)
-                        tiempo_ultima_registro[codigo] = time.time()
+                    if hora_entrada is None:
+                        # Si no se encuentra la hora de entrada, usar la hora actual
+                        hora_entrada = time.strftime("%H:%M:%S", time.localtime())
 
-                        # Obtener el área correspondiente al primer carácter del código
-                        area = obtener_area(codigo)
+                    # Agregar la fila al archivo de Excel con código, nombre, área, fecha, hora de entrada y hora de salida
+                    hojam.append([codigo_despues_del_primer_digito, nombre, area, fecha, texth, hora_entrada, time.strftime("%H:%M:%S")])
 
-                        codigo_despues_del_primer_digito = info.split('-')[0][2:].strip()
-
-                        # Buscar la hora de entrada en el archivo de Excel
-                        hora_entrada = None
-                        for row in hojam.iter_rows(min_row=2, max_col=6, max_row=hojam.max_row):
-                            if row[0].value == codigo_despues_del_primer_digito:
-                                # Verificar que la tupla tenga suficientes elementos antes de intentar acceder al índice 5
-                                if len(row) > 5:
-                                    hora_entrada = row[5].value
-                                break
-
-                        if hora_entrada is None:
-                            # Si no se encuentra la hora de entrada, usar la hora actual
-                            hora_entrada = time.strftime("%H:%M:%S", time.localtime())
-
-                        # Agregar la fila al archivo de Excel con código, nombre, área, fecha, hora de entrada y hora de salida
-                        hojam.append([codigo_despues_del_primer_digito, nombre, area, fecha, texth, hora_entrada, time.strftime("%H:%M:%S")])
-
-                        # Guardar los cambios en el archivo de Excel
-                        wb.save(ruta_archivo_excel)
+                    # Guardar los cambios en el archivo de Excel
+                    wb.save(ruta_archivo_excel)
 
 
-                        cv2.putText(frame, f"{letr}0{num}", (xi - 15, yi - 15), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 55, 0), 2)
-                        print("El usuario es accionista de la empresa \nNúmero de Identificación:", codigo, "Fecha de registro:", fecha, "Hora de registro:", texth)
+                    cv2.putText(frame, f"{letr}0{num}", (xi - 15, yi - 15), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 55, 0), 2)
+                    print("El usuario es accionista de la empresa \nNúmero de Identificación:", codigo, "Fecha de registro:", fecha, "Hora de registro:", texth)
 
-                    elif codigo in mañana:
-                        cv2.putText(frame, f"El ID {codigo}", (xi - 65, yi - 45), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
-                        cv2.putText(frame, "Registro Exitoso", (xi - 65, yi - 15), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
-                        print(mañana)
+                elif codigo in mañana:
+                    cv2.putText(frame, f"El ID {codigo}", (xi - 65, yi - 45), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+                    cv2.putText(frame, "Registro Exitoso", (xi - 65, yi - 15), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+                    print(mañana)
 
-            ret, jpeg = cv2.imencode('.jpg', frame)
-            frame_bytes = jpeg.tobytes()
-            yield (b'--frame\r\n'
-                b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n\r\n')
+        ret, jpeg = cv2.imencode('.jpg', frame)
+        frame_bytes = jpeg.tobytes()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n\r\n')
 
-    @app.route('/leer')
-    def mostrar_leer():
-        return render_template('leer.html')
+@app.route('/leer')
+def mostrar_leer():
+    return render_template('leer.html')
 
-    @app.route('/')
-    def inicio():
-        return render_template('index.html')
+@app.route('/')
+def inicio():
+    return render_template('index.html')
 
 
-    def generar_qr(prefijo, identificacion, nombre):
-        if not prefijo.isalpha():
-            raise ValueError("El prefijo debe contener solo letras.")
-        
-        ascii_prefijo = str(ord(prefijo))  # Convertir letra a código ASCII
-        id_completo = ascii_prefijo + str(identificacion)
-        info_completa = f"{id_completo} - {nombre}"
-        qr = pyqrcode.create(info_completa, error='L')
-        qr_path = f'static/qr_images/{prefijo}{identificacion}.png'
-        qr.png(qr_path, scale=6)
-        return qr_path
+def generar_qr(prefijo, identificacion, nombre):
+    if not prefijo.isalpha():
+        raise ValueError("El prefijo debe contener solo letras.")
+    
+    ascii_prefijo = str(ord(prefijo))  # Convertir letra a código ASCII
+    id_completo = ascii_prefijo + str(identificacion)
+    info_completa = f"{id_completo} - {nombre}"
+    qr = pyqrcode.create(info_completa, error='L')
+    qr_path = f'static/qr_images/{prefijo}{identificacion}.png'
+    qr.png(qr_path, scale=6)
+    return qr_path
 
-    @app.route('/generar', methods=['GET', 'POST'])
-    def generar():
-        if request.method == 'POST':
-            try:
-                prefijo = request.form['prefijo']
-                
-                if not prefijo.isalpha():
-                    raise ValueError("El prefijo debe contener solo letras.")
-                
-                identificacion = int(request.form['identificacion'])
-                nombre = request.form['nombre']
-                qr_path = generar_qr(prefijo, identificacion, nombre)
-                mensaje = f"QR generado para la identificación {identificacion} y el nombre {nombre}"
-                return render_template('generar.html', mensaje=mensaje, qr_path=qr_path)
-            except ValueError as e:
-                mensaje = str(e)
-                return render_template('generar.html', mensaje=mensaje)
-        return render_template('generar.html')
+@app.route('/generar', methods=['GET', 'POST'])
+def generar():
+    if request.method == 'POST':
+        try:
+            prefijo = request.form['prefijo']
+            
+            if not prefijo.isalpha():
+                raise ValueError("El prefijo debe contener solo letras.")
+            
+            identificacion = int(request.form['identificacion'])
+            nombre = request.form['nombre']
+            qr_path = generar_qr(prefijo, identificacion, nombre)
+            mensaje = f"QR generado para la identificación {identificacion} y el nombre {nombre}"
+            return render_template('generar.html', mensaje=mensaje, qr_path=qr_path)
+        except ValueError as e:
+            mensaje = str(e)
+            return render_template('generar.html', mensaje=mensaje)
+    return render_template('generar.html')
 
-    @app.route('/video_feed')
-    def video_feed():
-        return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+@app.route('/video_feed')
+def video_feed():
+    return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-    @app.route('/registros', methods=['GET'])
-    def mostrar_registros():
-        fecha_filtro = request.args.get('fecha', datetime.today().strftime('%Y-%m-%d'))
-        carpeta_registros = 'registros_excel'
-        
-        registros = []
+@app.route('/registros', methods=['GET'])
+def mostrar_registros():
+    fecha_filtro = request.args.get('fecha', datetime.today().strftime('%Y-%m-%d'))
+    carpeta_registros = 'registros_excel'
+    
+    registros = []
 
-        for archivo_excel in os.listdir(carpeta_registros):
-            ruta_archivo_excel = os.path.join(carpeta_registros, archivo_excel)
+    for archivo_excel in os.listdir(carpeta_registros):
+        ruta_archivo_excel = os.path.join(carpeta_registros, archivo_excel)
 
-            try:
-                wb = xl.load_workbook(ruta_archivo_excel)
-                hoja_actual = wb['Actual']
+        try:
+            wb = xl.load_workbook(ruta_archivo_excel)
+            hoja_actual = wb['Actual']
 
-                for row in hoja_actual.iter_rows(min_row=2, values_only=True):
-                    registro = {
-                        'Identificacion': row[0],
-                        'Nombre': row[1],
-                        'Area': row[2],
-                        'Fecha': row[3],
-                        'Hora': row[4],
-                        'Entrada': row[5],
-                        'Salida': row[6]
-                    }
+            for row in hoja_actual.iter_rows(min_row=2, values_only=True):
+                registro = {
+                    'Identificacion': row[0],
+                    'Nombre': row[1],
+                    'Area': row[2],
+                    'Fecha': row[3],
+                    'Hora': row[4],
+                    'Entrada': row[5],
+                    'Salida': row[6]
+                }
 
-                    # Filtra los registros por fecha si se proporciona una fecha de filtro
-                    if fecha_filtro:
-                        if registro['Fecha'] == fecha_filtro:
-                            registros.append(registro)
-                    else:
+                # Filtra los registros por fecha si se proporciona una fecha de filtro
+                if fecha_filtro:
+                    if registro['Fecha'] == fecha_filtro:
                         registros.append(registro)
+                else:
+                    registros.append(registro)
 
-            except Exception as e:
-                print(f"Error al procesar el archivo {archivo_excel}: {e}")
+        except Exception as e:
+            print(f"Error al procesar el archivo {archivo_excel}: {e}")
 
-        return render_template('registros.html', registros=registros, fecha_actual=datetime.today().strftime('%Y-%m-%d'))
-    return app
-app = create_app()
-
+    return render_template('registros.html', registros=registros, fecha_actual=datetime.today().strftime('%Y-%m-%d'))
 
 if __name__ == '__main__':
-    
-    serve(app, host='192.168.1.53', port=5000, threads=4, url_scheme='http')
+    app.run(host='192.168.1.53', port=5000, debug=True)
