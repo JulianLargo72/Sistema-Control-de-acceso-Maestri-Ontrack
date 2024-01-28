@@ -1,5 +1,9 @@
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.image import MIMEImage
 import os
-from flask import Flask, render_template, request, Response
+from flask import Flask, render_template, url_for, request, Response
 import cv2
 from pyzbar.pyzbar import decode
 import numpy as np
@@ -54,7 +58,7 @@ except FileNotFoundError:
     wb.save(ruta_archivo_excel)
 
 def generate_frames():
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(0)
     while True:
         ret, frame = cap.read()
         
@@ -141,6 +145,7 @@ def inicio():
     return render_template('index.html')
 
 
+#Función para generar el código QR y devolver la ruta y la información completa
 def generar_qr(prefijo, identificacion, nombre):
     if not prefijo.isalpha():
         raise ValueError("El prefijo debe contener solo letras.")
@@ -151,21 +156,54 @@ def generar_qr(prefijo, identificacion, nombre):
     qr = pyqrcode.create(info_completa, error='L')
     qr_path = f'static/qr_images/{prefijo}{identificacion}.png'
     qr.png(qr_path, scale=6)
-    return qr_path
+    return qr_path, info_completa  # Devolver la ruta y la información completa
+
+# Función para enviar el correo electrónico
+def enviar_correo(destinatario, asunto, cuerpo, adjunto_path):
+    remitente = "julianbetancur104@gmail.com"  # Cambia por tu dirección de correo electrónico
+    password = "ojpeylqitwhadnhu"  # Cambia por tu contraseña
+
+    # Configuración del servidor SMTP de Gmail
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.starttls()
+    server.login(remitente, password)
+
+    # Construir el mensaje del correo electrónico
+    mensaje = MIMEMultipart()
+    mensaje['From'] = remitente
+    mensaje['To'] = destinatario
+    mensaje['Subject'] = asunto
+
+    mensaje.attach(MIMEText(cuerpo, 'plain'))
+
+    # Adjuntar la imagen del código QR al mensaje
+    with open(adjunto_path, 'rb') as archivo_adjunto:
+        adjunto = MIMEImage(archivo_adjunto.read(), name='qr.png')
+        mensaje.attach(adjunto)
+
+    # Enviar el correo electrónico
+    server.sendmail(remitente, destinatario, mensaje.as_string())
+    server.quit()
 
 @app.route('/generar', methods=['GET', 'POST'])
 def generar():
     if request.method == 'POST':
         try:
             prefijo = request.form['prefijo']
-            
             if not prefijo.isalpha():
                 raise ValueError("El prefijo debe contener solo letras.")
             
             identificacion = int(request.form['identificacion'])
             nombre = request.form['nombre']
-            qr_path = generar_qr(prefijo, identificacion, nombre)
-            mensaje = f"QR generado para la identificación {identificacion} y el nombre {nombre}"
+            qr_path, info_completa = generar_qr(prefijo, identificacion, nombre)
+
+            # Agregar campo de correo electrónico en el formulario
+            destinatario = request.form['correo']  # Asegúrate de tener un campo 'correo' en tu formulario
+
+            # Enviar el correo electrónico con la información y el código QR
+            enviar_correo(destinatario, "Asunto del Correo", info_completa, qr_path)
+
+            mensaje = f"QR generado para la identificación {identificacion} y el nombre {nombre}. Se ha enviado al correo {destinatario}."
             return render_template('generar.html', mensaje=mensaje, qr_path=qr_path)
         except ValueError as e:
             mensaje = str(e)
