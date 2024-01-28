@@ -80,12 +80,11 @@
             <label for="nombre" class="form-label">Nombre:</label>
             <input type="text" class="form-control" name="nombre" required />
           </div>
-          <!-- Nuevo campo para el correo electrónico -->
           <div class="mb-3">
             <label for="correo" class="form-label">Correo Electrónico:</label>
-            <input type="email" class="form-control" name="correo" required />
-          </div>
-          <button type="submit" class="btn btn-success mx-auto">Generar QR y Enviar Correo</button>
+            <input type="email" class="form-control" name="correo" />
+         </div>
+          <button type="submit" class="btn btn-success mx-auto">Generar QR</button>
         </form>
       
         {% if mensaje %}

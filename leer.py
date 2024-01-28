@@ -163,7 +163,7 @@ def enviar_correo(destinatario, asunto, cuerpo, adjunto_path):
     remitente = "julianbetancur104@gmail.com"  # Cambia por tu dirección de correo electrónico
     password = "ojpeylqitwhadnhu"  # Cambia por tu contraseña
 
-    # Configuración del servidor SMTP de Gmail
+        # Configuración del servidor SMTP de Gmail
     server = smtplib.SMTP('smtp.gmail.com', 587)
     server.starttls()
     server.login(remitente, password)
@@ -197,13 +197,16 @@ def generar():
             nombre = request.form['nombre']
             qr_path, info_completa = generar_qr(prefijo, identificacion, nombre)
 
-            # Agregar campo de correo electrónico en el formulario
-            destinatario = request.form['correo']  # Asegúrate de tener un campo 'correo' en tu formulario
+            # Verificar si el campo de correo está presente en el formulario
+            destinatario = request.form.get('correo', '')  # Si no se proporciona, el valor será una cadena vacía
 
-            # Enviar el correo electrónico con la información y el código QR
-            enviar_correo(destinatario, "Asunto del Correo", info_completa, qr_path)
+            # Enviar el correo electrónico solo si se proporciona el correo
+            if destinatario:
+                enviar_correo(destinatario, "Codigo QR control de acceso Maestri Ontrack", f" Cordial saludo:\n\nTe informamos que el QR generado con la siguiente informacion ha sido registrado con exito!\n\nNombre: {nombre}\nIdentificación: {identificacion}\n\nA continuacion adjuntamos el codigo", qr_path)
 
-            mensaje = f"QR generado para la identificación {identificacion} y el nombre {nombre}. Se ha enviado al correo {destinatario}."
+            mensaje = f"QR generado para la identificación {identificacion} y el nombre {nombre}."
+            if destinatario:
+                mensaje += f" Se ha enviado al correo {destinatario}."
             return render_template('generar.html', mensaje=mensaje, qr_path=qr_path)
         except ValueError as e:
             mensaje = str(e)
