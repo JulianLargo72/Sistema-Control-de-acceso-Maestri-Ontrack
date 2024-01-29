@@ -162,8 +162,8 @@ def generar_qr(prefijo, identificacion, nombre):
 
 # Función para enviar el correo electrónico
 def enviar_correo(destinatario, asunto, cuerpo, adjunto_path):
-    remitente = "julianbetancur104@gmail.com"  # Cambia por tu dirección de correo electrónico
-    password = "ojpeylqitwhadnhu"  # Cambia por tu contraseña
+    remitente = "sistemasmaestri@gmail.com"
+    password = "ugtdrarcnbgsxnbu"
 
         # Configuración del servidor SMTP de Gmail
     server = smtplib.SMTP('smtp.gmail.com', 587)
@@ -220,27 +220,27 @@ def video_feed():
     return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 def enviar_correo_excel(destinatario, asunto, cuerpo, adjunto_path):
-    remitente = "julianbetancur104@gmail.com"
-    password = "ojpeylqitwhadnhu"
+    remitente = "sistemasmaestri@gmail.com"
+    password = "ugtdrarcnbgsxnbu"
 
     # Configuración del servidor SMTP de Gmail
     server = smtplib.SMTP('smtp.gmail.com', 587)
     server.starttls()
     server.login(remitente, password)
 
-    # Construir el mensaje del correo electrónico
+    # Carga el archivo adjunto en memoria
+    archivo_adjunto_memoria = open(adjunto_path, 'rb').read()
+
+    # Crea el mensaje de correo electrónico
     mensaje = MIMEMultipart()
     mensaje['From'] = remitente
     mensaje['To'] = destinatario
     mensaje['Subject'] = asunto
 
-    mensaje.attach(MIMEText(cuerpo, 'plain'))
-
     # Adjuntar el archivo Excel al mensaje
-    with open(adjunto_path, 'rb') as archivo_adjunto:
-        adjunto = MIMEApplication(archivo_adjunto.read(), _subtype="xlsx")
-        adjunto.add_header('Content-Disposition', f'attachment; filename={os.path.basename(adjunto_path)}')
-        mensaje.attach(adjunto)
+    adjunto = MIMEApplication(archivo_adjunto_memoria, _subtype="xlsx")
+    adjunto.add_header('Content-Disposition', f'attachment; filename={os.path.basename(adjunto_path)}')
+    mensaje.attach(adjunto)
 
     # Enviar el correo electrónico
     server.sendmail(remitente, destinatario, mensaje.as_string())
