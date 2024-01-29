@@ -76,7 +76,11 @@ def generate_frames():
         a, me, d = fecha[0:4], fecha[5:7], fecha[8:10]
         h, m, s = int(hora[0:2]), int(hora[3:5]), int(hora[6:8])
 
-        texth = f"{h}:{m}:{s}"
+        # Obtener la hora actual
+        hora_actual = datetime.now().time()
+
+        # Formatear la hora, minutos y segundos con dos dígitos
+        texth = hora_actual.strftime('%H:%M:%S')
         print(texth)
 
         for codes in decode(frame):
