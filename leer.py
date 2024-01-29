@@ -2,6 +2,7 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
+from email.mime.application import MIMEApplication
 import os
 from flask import Flask, render_template, url_for, request, Response
 import cv2
@@ -58,7 +59,7 @@ except FileNotFoundError:
     wb.save(ruta_archivo_excel)
 
 def generate_frames():
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(1)
     while True:
         ret, frame = cap.read()
         
@@ -217,6 +218,33 @@ def generar():
 def video_feed():
     return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
+def enviar_correo_excel(destinatario, asunto, cuerpo, adjunto_path):
+    remitente = "julianbetancur104@gmail.com"
+    password = "ojpeylqitwhadnhu"
+
+    # Configuración del servidor SMTP de Gmail
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.starttls()
+    server.login(remitente, password)
+
+    # Construir el mensaje del correo electrónico
+    mensaje = MIMEMultipart()
+    mensaje['From'] = remitente
+    mensaje['To'] = destinatario
+    mensaje['Subject'] = asunto
+
+    mensaje.attach(MIMEText(cuerpo, 'plain'))
+
+    # Adjuntar el archivo Excel al mensaje
+    with open(adjunto_path, 'rb') as archivo_adjunto:
+        adjunto = MIMEApplication(archivo_adjunto.read(), _subtype="xlsx")
+        adjunto.add_header('Content-Disposition', f'attachment; filename={os.path.basename(adjunto_path)}')
+        mensaje.attach(adjunto)
+
+    # Enviar el correo electrónico
+    server.sendmail(remitente, destinatario, mensaje.as_string())
+    server.quit()
+
 @app.route('/registros', methods=['GET'])
 def mostrar_registros():
     fecha_filtro = request.args.get('fecha', datetime.today().strftime('%Y-%m-%d'))
@@ -254,5 +282,56 @@ def mostrar_registros():
 
     return render_template('registros.html', registros=registros, fecha_actual=datetime.today().strftime('%Y-%m-%d'))
 
+
+
+@app.route('/enviar_excel', methods=['GET', 'POST'])
+def enviar_excel():
+    carpeta_registros = 'registros_excel'
+    fecha_filtro = datetime.today().strftime('%Y-%m-%d')
+    registros = []  # Inicializa la variable registros aquí
+
+    if request.method == 'GET':
+        fecha_filtro = request.args.get('fecha', fecha_filtro)
+
+        for archivo_excel in os.listdir(carpeta_registros):
+            ruta_archivo_excel = os.path.join(carpeta_registros, archivo_excel)
+
+            try:
+                wb = xl.load_workbook(ruta_archivo_excel)
+                hoja_actual = wb['Actual']
+
+                for row in hoja_actual.iter_rows(min_row=2, values_only=True):
+                    registro = {
+                        'Identificacion': row[0],
+                        'Nombre': row[1],
+                        'Area': row[2],
+                        'Fecha': row[3],
+                        'Hora': row[4],
+                        'Entrada': row[5],
+                        'Salida': row[6]
+                    }
+
+                    if fecha_filtro:
+                        if registro['Fecha'] == fecha_filtro:
+                            registros.append(registro)
+                    else:
+                        registros.append(registro)
+
+            except Exception as e:
+                print(f"Error al procesar el archivo {archivo_excel}: {e}")
+
+        return render_template('enviar_correo.html', registros=registros, fecha_actual=datetime.today().strftime('%Y-%m-%d'))
+
+    elif request.method == 'POST':
+        correo_destinatario = request.form.get('correo_destinatario')
+        fecha_filtro = request.form.get('fecha', fecha_filtro)
+
+        archivo_a_enviar = os.path.join(carpeta_registros, f'{fecha_filtro}.xlsx')
+
+        enviar_correo_excel(correo_destinatario, 'Archivo Control de Acceso', f"Cordial saludo,\n\nA continuacion adjuntamos el archivo de control de acceso correspondiente al registro de la fecha {fecha_filtro}", archivo_a_enviar)
+
+        # Devuelve la plantilla con la fecha actual, ya que no se actualizó registros en el bloque POST
+        return render_template('enviar_correo.html', registros=[], fecha_actual=datetime.today().strftime('%Y-%m-%d'))
+
 if __name__ == '__main__':
-    app.run(host='192.168.1.53', port=5000, debug=True)
+    app.run(host='192.168.0.44', port=5000, debug=True)
