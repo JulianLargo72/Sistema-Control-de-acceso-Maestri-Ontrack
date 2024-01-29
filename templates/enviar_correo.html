@@ -8,43 +8,41 @@
   </head>
   <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-success">
-      <div class="container">
-        <a class="navbar-brand" href="/">
-          <img src="/static/imagenes/horizontal.png" alt="Logo" width="50" height="35" class="d-inline-block align-top">
-          CONTROL DE ACCESO
-        </a>
-
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav ml-auto">
-            <li class="nav-item active">
-              <a class="nav-link" href="/">Home </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/generar">Generar QR</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/leer">Leer QR</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/registros">Lista de Registros</a>
-            </li>
-            <li class="nav-item">
+        <div class="container">
+          <a class="navbar-brand" href="/">
+            <img src="/static/imagenes/horizontal.png" alt="Logo" width="50" height="35" class="d-inline-block align-top">
+            CONTROL DE ACCESO
+          </a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ml-auto">
+              <li class="nav-item active">
+                <a class="nav-link" href="/">Home </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/generar">Generar QR</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/leer">Leer QR</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/registros">Lista de Registros</a>
+              </li>
+              <li class="nav-item">
                 <a class="nav-link" href="/enviar_excel">Enviar Registros</a>
-            </li>
-          </ul>
+              </li>
+            </ul>
+          </div>
         </div>
-      </div>
-    </nav>
-    
+      </nav>
     <div class="container mt-4">
         <h1 class="text-center">Enviar registro a Correo</h1>
+        <br>
         {% with messages = get_flashed_messages() %}
             {% if messages %}
-        <div class="alert alert-danger" role="alert">
+        <div class="alert alert-warning" role="alert">
             {{ messages[0] }}
          </div>
         {% endif %}
@@ -61,18 +59,10 @@
             <button type="submit" class="btn btn-success btn-lg">Enviar</button>
         </form>
     </div>
-    
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
-      <br>
+      <br><br><br><br><br><br><br>
       <footer class="bg-light p-3 text-center">
         <p class="mb-0">&copy; 2024 - Todos los derechos reservados | Maestri on Track S.A.S</p>
       </footer>
-
     <script
       src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
       integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3"

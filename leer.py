@@ -337,11 +337,12 @@ def enviar_excel():
 
         try:
             enviar_correo_excel(correo_destinatario, 'Archivo Control de Acceso', f"Cordial saludo,\n\nA continuacion adjuntamos el archivo de control de acceso correspondiente al registro de la fecha {fecha_filtro}", archivo_a_enviar)
+            flash('Correo enviado exitosamente.', 'success')  # Agrega la alerta de éxito
         except FileNotFoundError:
             flash('El archivo de registro no se encontró.')
             return redirect(url_for('enviar_excel'))
 
-        # Devuelve la plantilla con la fecha actual, ya que no se actualizó registros en el bloque POST
+        # Devuelve la plantilla con la fecha actual y la alerta de éxito
         return render_template('enviar_correo.html', registros=[], fecha_actual=datetime.today().strftime('%Y-%m-%d'))
 
 if __name__ == '__main__':
