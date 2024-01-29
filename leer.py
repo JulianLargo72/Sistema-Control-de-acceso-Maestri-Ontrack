@@ -4,7 +4,7 @@ from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 from email.mime.application import MIMEApplication
 import os
-from flask import Flask, render_template, url_for, request, Response
+from flask import Flask, render_template, url_for, flash, request, redirect, Response
 import cv2
 from pyzbar.pyzbar import decode
 import numpy as np
@@ -14,6 +14,7 @@ import time
 import pyqrcode
 
 app = Flask(__name__)
+app.secret_key = 'maestri'
 
 mañana = []
 tiempo_ultima_registro = {}
@@ -293,7 +294,13 @@ def enviar_excel():
     if request.method == 'GET':
         fecha_filtro = request.args.get('fecha', fecha_filtro)
 
-        for archivo_excel in os.listdir(carpeta_registros):
+        try:
+            archivos_excel = [archivo for archivo in os.listdir(carpeta_registros) if archivo.endswith('.xlsx')]
+        except FileNotFoundError:
+            flash('No se encontraron archivos de registro.')
+            return render_template('enviar_correo.html', registros=registros, fecha_actual=datetime.today().strftime('%Y-%m-%d'))
+
+        for archivo_excel in archivos_excel:
             ruta_archivo_excel = os.path.join(carpeta_registros, archivo_excel)
 
             try:
@@ -328,7 +335,11 @@ def enviar_excel():
 
         archivo_a_enviar = os.path.join(carpeta_registros, f'{fecha_filtro}.xlsx')
 
-        enviar_correo_excel(correo_destinatario, 'Archivo Control de Acceso', f"Cordial saludo,\n\nA continuacion adjuntamos el archivo de control de acceso correspondiente al registro de la fecha {fecha_filtro}", archivo_a_enviar)
+        try:
+            enviar_correo_excel(correo_destinatario, 'Archivo Control de Acceso', f"Cordial saludo,\n\nA continuacion adjuntamos el archivo de control de acceso correspondiente al registro de la fecha {fecha_filtro}", archivo_a_enviar)
+        except FileNotFoundError:
+            flash('El archivo de registro no se encontró.')
+            return redirect(url_for('enviar_excel'))
 
         # Devuelve la plantilla con la fecha actual, ya que no se actualizó registros en el bloque POST
         return render_template('enviar_correo.html', registros=[], fecha_actual=datetime.today().strftime('%Y-%m-%d'))
