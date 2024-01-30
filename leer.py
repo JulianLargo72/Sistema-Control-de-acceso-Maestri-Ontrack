@@ -246,6 +246,9 @@ def enviar_correo_excel(destinatario, asunto, cuerpo, adjunto_path):
     adjunto.add_header('Content-Disposition', f'attachment; filename={os.path.basename(adjunto_path)}')
     mensaje.attach(adjunto)
 
+    # Agregar el cuerpo del mensaje
+    mensaje.attach(MIMEText(cuerpo, 'plain'))
+
     # Enviar el correo electrónico
     server.sendmail(remitente, destinatario, mensaje.as_string())
     server.quit()
