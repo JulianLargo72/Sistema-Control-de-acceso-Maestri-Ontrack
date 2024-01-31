@@ -45,45 +45,48 @@
   </nav>
 
     <!-- Contenido Principal -->
-    <div class="container mt-5">
-        <h1 class="text-center">Registros de Acceso</h1>
-        
-        <form action="{{ url_for('mostrar_registros') }}" method="get" class="mb-3">
-            <div class="form-group">
-                <label for="fecha">Selecciona una fecha:</label>
-                <input type="date" id="fecha" name="fecha" value="{{ fecha_actual }}" class="form-control">
-            </div>
-            <br>
-            <button type="submit" class="btn btn-success btn-lg">Filtrar</button>
-        </form>
-
-        <table class="table table-success table-striped text-center table-hover table-sm" id="registros">
-            <thead class="thead-dark">
-                <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
-                    <th>Area</th>
-                    <th>Fecha</th>
-                    <th>Hora Escaneo</th>
-                    <th>Hora entrada</th>
-                    <th>Hora Salida</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for registro in registros %}
-                    <tr>
-                        <td>{{ registro['Identificacion'] }}</td>
-                        <td>{{ registro['Nombre'] }}</td>
-                        <td>{{ registro['Area'] }}</td>
-                        <td>{{ registro['Fecha'] }}</td>
-                        <td>{{ registro['Hora'] }}</td>
-                        <td>{{ registro['Entrada'] }}</td>
-                        <td>{{ registro['Salida'] }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <div class="card container mt-5">
+      <div class="card-body">
+          <h1 class="card-title text-center">Registros de Acceso</h1>
+  
+          <form action="{{ url_for('mostrar_registros') }}" method="get" class="mb-3">
+              <div class="form-group">
+                  <label for="fecha">Selecciona una fecha:</label>
+                  <input type="date" id="fecha" name="fecha" value="{{ fecha_actual }}" class="form-control">
+              </div>
+              <br>
+              <button type="submit" class="btn btn-success btn-lg">Filtrar</button>
+          </form>
+  
+          <table class="table table-success table-striped text-center table-hover table-sm" id="registros">
+              <thead class="thead-dark">
+                  <tr>
+                      <th>ID</th>
+                      <th>Nombre</th>
+                      <th>Area</th>
+                      <th>Fecha</th>
+                      <th>Hora Escaneo</th>
+                      <th>Hora entrada</th>
+                      <th>Hora Salida</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {% for registro in registros %}
+                      <tr>
+                          <td>{{ registro['Identificacion'] }}</td>
+                          <td>{{ registro['Nombre'] }}</td>
+                          <td>{{ registro['Area'] }}</td>
+                          <td>{{ registro['Fecha'] }}</td>
+                          <td>{{ registro['Hora'] }}</td>
+                          <td>{{ registro['Entrada'] }}</td>
+                          <td>{{ registro['Salida'] }}</td>
+                      </tr>
+                  {% endfor %}
+              </tbody>
+          </table>
+      </div>
     </div>
+  
     <br><br><br>
     <footer class="bg-light p-3 text-center">
       <p class="mb-0">&copy; 2024 - Todos los derechos reservados | Maestri on Track S.A.S</p>

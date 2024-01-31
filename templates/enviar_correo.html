@@ -37,29 +37,32 @@
           </div>
         </div>
       </nav>
-    <div class="container mt-4">
-        <h1 class="text-center">Enviar registro a Correo</h1>
-        <br>
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-        <div class="alert alert-warning" role="alert">
-            {{ messages[0] }}
-         </div>
-        {% endif %}
-    {% endwith %}
-        <form action="{{ url_for('enviar_excel') }}" method="post">
-            <div class="mb-3">
-                <label for="fecha" class="form-label">Selecciona una fecha:</label>
-                <input type="date" id="fecha" name="fecha" value="{{ fecha_actual }}" class="form-control">
-            </div>
-            <div class="mb-3">
-                <label for="correo_destinatario" class="form-label">Correo del destinatario:</label>
-                <input type="email" id="correo_destinatario" name="correo_destinatario" class="form-control" required>
-            </div>
-            <button type="submit" class="btn btn-success btn-lg">Enviar</button>
-        </form>
+      <div class="card container mt-4">
+        <div class="card-body">
+            <h1 class="card-title text-center">Enviar registro a Correo</h1>
+            <br>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="alert alert-warning" role="alert">
+                        {{ messages[0] }}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            <form action="{{ url_for('enviar_excel') }}" method="post">
+                <div class="mb-3">
+                    <label for="fecha" class="form-label">Selecciona una fecha:</label>
+                    <input type="date" id="fecha" name="fecha" value="{{ fecha_actual }}" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label for="correo_destinatario" class="form-label">Correo del destinatario:</label>
+                    <input type="email" id="correo_destinatario" name="correo_destinatario" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-success btn-lg">Enviar</button>
+            </form>
+        </div>
+        <br><br><br><br><br><br>
     </div>
-      <br><br><br><br><br><br><br><br><br>
+      <br><br>
       <footer class="bg-light p-3 text-center">
         <p class="mb-0">&copy; 2024 - Todos los derechos reservados | Maestri on Track S.A.S</p>
       </footer>

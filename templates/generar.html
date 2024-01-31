@@ -40,48 +40,47 @@
       </div>
     </div>
   </nav>
-      <div class="container mt-4">
-        <h1 class="text-center mb-4">Generador de Códigos QR</h1>
+  <div class="card container mt-4">
+    <div class="card-body">
+        <h1 class="card-title text-center mb-4">Generador de Códigos QR</h1>
         <form method="post" action="{{ url_for('generar') }}" class="mx-auto">
-          <!-- Alinear el formulario al centro -->
-          <div class="mb-3">
-            <label for="prefijo" class="form-label">Área:</label>
-            <select class="form-select" name="prefijo" required>
-              <option value="" disabled selected>Seleccione una opción</option>
-              <option value="A">Administrativa</option>
-              <option value="G">Gerencial</option>
-              <option value="C">Comercial</option>
-              <option value="O">Operaciones</option>
-            </select>
-          </div>
-          <div class="mb-3">
-            <label for="identificacion" class="form-label">Identificación:</label>
-            <input
-              type="number"
-              class="form-control"
-              name="identificacion"
-              required
-            />
-          </div>
-          <div class="mb-3">
-            <label for="nombre" class="form-label">Nombre:</label>
-            <input type="text" class="form-control" name="nombre" required />
-          </div>
-          <div class="mb-3">
-            <label for="correo" class="form-label">Correo Electrónico:</label>
-            <input type="email" class="form-control" placeholder="Campo Opcional" name="correo" />
-         </div>
-          <button type="submit" class="btn btn-success mx-auto">Generar QR</button>
+            <!-- Alinear el formulario al centro -->
+            <div class="mb-3">
+                <label for="prefijo" class="form-label">Área:</label>
+                <select class="form-select" name="prefijo" required>
+                    <option value="" disabled selected>Seleccione una opción</option>
+                    <option value="A">Administrativa</option>
+                    <option value="G">Gerencial</option>
+                    <option value="C">Comercial</option>
+                    <option value="O">Operaciones</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="identificacion" class="form-label">Identificación:</label>
+                <input type="number" class="form-control" name="identificacion" required />
+            </div>
+            <div class="mb-3">
+                <label for="nombre" class="form-label">Nombre:</label>
+                <input type="text" class="form-control" name="nombre" required />
+            </div>
+            <div class="mb-3">
+                <label for="correo" class="form-label">Correo Electrónico:</label>
+                <input type="email" class="form-control" placeholder="Campo Opcional" name="correo" />
+            </div>
+            <button type="submit" class="btn btn-success mx-auto">Generar QR</button>
         </form>
-      
+
         {% if mensaje %}
             <div class="alert alert-success mt-3 text-center" role="alert">
-          {{ mensaje }}
-        </div>
-        {% endif %} {% if qr_path %}
-        <img src="{{ qr_path }}" alt="Código QR" class="img-fluid mt-3 mx-auto" />
+                {{ mensaje }}
+            </div>
+        {% endif %} 
+        {% if qr_path %}
+            <img src="{{ qr_path }}" alt="Código QR" class="img-fluid mt-3 mx-auto" />
         {% endif %}
-      </div>
+    </div>
+</div>
+
       <br><br><br>
       <footer class="bg-light p-3 text-center">
         <p class="mb-0">&copy; 2024 - Todos los derechos reservados | Maestri on Track S.A.S</p>

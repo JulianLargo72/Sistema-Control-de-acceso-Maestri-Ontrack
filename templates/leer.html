@@ -40,11 +40,13 @@
         </div>
       </div>
     </nav>
-    <div class="container mt-4">
-        <h1 class="text-center mb-4">Lector de Códigos QR</h1>
-        <img src="{{ url_for('video_feed', _external=True) }}" alt="SISTEMA CONTROL DE ACCESO" class="img-fluid mx-auto d-block"/>
+    <div class="card container mt-4">
+      <div class="card-body">
+          <h1 class="card-title text-center mb-4">Lector de Códigos QR</h1>
+          <img src="{{ url_for('video_feed', _external=True) }}" alt="SISTEMA CONTROL DE ACCESO" class="img-fluid mx-auto d-block" />
+      </div>
     </div>
-
+    <br>
     <footer class="bg-light p-3 text-center">
       <p class="mb-0">&copy; 2024 - Todos los derechos reservados | Maestri on Track S.A.S</p>
     </footer>
