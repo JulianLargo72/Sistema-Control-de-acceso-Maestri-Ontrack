@@ -55,7 +55,7 @@ except FileNotFoundError:
     # Si el archivo no existe, crear uno nuevo en la nueva carpeta
     wb = xl.Workbook()
     hojam = wb.create_sheet("Actual")
-    hojam.append(["Identificacion", "Nombre", "Area", "Fecha", "Hora Escaneo", "Hora Entrada", "Hora Salida"])  # Encabezados
+    hojam.append(["Documento", "Nombre", "Area", "Fecha", "Hora Escaneo", "Hora Entrada", "Hora Salida"])  # Encabezados
     # Guardar en la nueva carpeta
     wb.save(ruta_archivo_excel)
 
