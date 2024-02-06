@@ -85,11 +85,10 @@ def generate_frames():
 
         for codes in decode(frame):
             info = codes.data.decode('utf-8')
-            tipo = int(info[0:2]) if info and info[0:2] else 0
+            tipo = int(info[0:2])
             letr = chr(tipo)
             num = info[2:]
-            nombre_parts = info.split('-')
-            nombre = nombre_parts[1].strip() if len(nombre_parts) > 1 else 'Nombre no disponible'
+            nombre = info.split('-')[1].strip()
             pts = np.array([codes.polygon], np.int32)
             xi, yi = codes.rect.left, codes.rect.top
             pts = pts.reshape((-1, 1, 2))
