@@ -56,9 +56,22 @@ def obtener_o_crear_hoja_excel(ruta_archivo_excel):
     except FileNotFoundError:
         wb = xl.Workbook()
         hojam = wb.create_sheet("Actual")
-        hojam.append(["Documento", "Nombre", "Area", "Fecha", "Hora Escaneo", "Hora Entrada", "Hora Salida"])  # Encabezados
+        hojam.append(["Documento", "Nombre", "Area", "Fecha", "Hora Escaneo", "Hora Entrada", "Hora Salida", "Rango"])  # Encabezados
         wb.save(ruta_archivo_excel)
     return wb, hojam
+
+def obtener_rango(hora_actual):
+    hora_entrada = datetime.strptime(hora_actual, '%H:%M:%S')
+    if datetime.strptime('07:00:00', '%H:%M:%S') <= hora_entrada <= datetime.strptime('09:00:00', '%H:%M:%S'):
+        return 'Entrada AM'
+    elif datetime.strptime('11:30:00', '%H:%M:%S') <= hora_entrada <= datetime.strptime('12:30:00', '%H:%M:%S'):
+        return 'Salida AM'
+    elif datetime.strptime('12:30:00', '%H:%M:%S') <= hora_entrada <= datetime.strptime('14:30:00', '%H:%M:%S'):
+        return 'Entrada PM'
+    elif datetime.strptime('16:30:00', '%H:%M:%S') <= hora_entrada <= datetime.strptime('19:00:00', '%H:%M:%S'):
+        return 'Salida PM'
+    else:
+        return 'Revisar'
 
 def generate_frames():
     cap = cv2.VideoCapture(1)
@@ -127,7 +140,8 @@ def generate_frames():
                         hora_entrada = time.strftime("%H:%M:%S", time.localtime())
 
                     # Agregar la fila al archivo de Excel con código, nombre, área, fecha, hora de entrada y hora de salida
-                    hojam.append([codigo_despues_del_primer_digito, nombre, area, fecha, texth, hora_entrada, time.strftime("%H:%M:%S")])
+                    rango = obtener_rango(hora_actual.strftime('%H:%M:%S'))
+                    hojam.append([codigo_despues_del_primer_digito, nombre, area, fecha, texth, hora_entrada, time.strftime("%H:%M:%S"), rango])
 
                     # Guardar los cambios en el archivo de Excel
                     wb.save(ruta_archivo_excel)
@@ -278,7 +292,8 @@ def mostrar_registros():
                     'Fecha': row[3],
                     'Hora': row[4],
                     'Entrada': row[5],
-                    'Salida': row[6]
+                    'Salida': row[6],
+                    'Rango': row[7]
                 }
 
                 # Filtra los registros por fecha si se proporciona una fecha de filtro
