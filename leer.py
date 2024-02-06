@@ -44,20 +44,21 @@ nombre_carpeta_registros = 'registros_excel'
 if not os.path.exists(nombre_carpeta_registros):
     os.makedirs(nombre_carpeta_registros)
 
-# Construir la ruta completa al archivo Excel en la nueva carpeta
-hora, fecha_actual = infhora()
-ruta_archivo_excel = os.path.join(nombre_carpeta_registros, f"{fecha_actual}.xlsx")
+def obtener_ruta_archivo_excel():
+    hora, fecha_actual = infhora()
+    ruta_archivo_excel = os.path.join(nombre_carpeta_registros, f"{fecha_actual}.xlsx")
+    return ruta_archivo_excel
 
-try:
-    wb = xl.load_workbook(ruta_archivo_excel)
-    hojam = wb["Actual"]
-except FileNotFoundError:
-    # Si el archivo no existe, crear uno nuevo en la nueva carpeta
-    wb = xl.Workbook()
-    hojam = wb.create_sheet("Actual")
-    hojam.append(["Documento", "Nombre", "Area", "Fecha", "Hora Escaneo", "Hora Entrada", "Hora Salida"])  # Encabezados
-    # Guardar en la nueva carpeta
-    wb.save(ruta_archivo_excel)
+def obtener_o_crear_hoja_excel(ruta_archivo_excel):
+    try:
+        wb = xl.load_workbook(ruta_archivo_excel)
+        hojam = wb["Actual"]
+    except FileNotFoundError:
+        wb = xl.Workbook()
+        hojam = wb.create_sheet("Actual")
+        hojam.append(["Documento", "Nombre", "Area", "Fecha", "Hora Escaneo", "Hora Entrada", "Hora Salida"])  # Encabezados
+        wb.save(ruta_archivo_excel)
+    return wb, hojam
 
 def generate_frames():
     cap = cv2.VideoCapture(1)
@@ -82,6 +83,9 @@ def generate_frames():
         # Formatear la hora, minutos y segundos con dos dígitos
         texth = hora_actual.strftime('%H:%M:%S')
         print(texth)
+
+        ruta_archivo_excel = obtener_ruta_archivo_excel()
+        wb, hojam = obtener_o_crear_hoja_excel(ruta_archivo_excel)
 
         for codes in decode(frame):
             info = codes.data.decode('utf-8')
@@ -127,7 +131,6 @@ def generate_frames():
 
                     # Guardar los cambios en el archivo de Excel
                     wb.save(ruta_archivo_excel)
-
 
                     cv2.putText(frame, f"{letr}0{num}", (xi - 15, yi - 15), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 55, 0), 2)
                     print("El usuario es accionista de la empresa \nNúmero de Identificación:", codigo, "Fecha de registro:", fecha, "Hora de registro:", texth)
