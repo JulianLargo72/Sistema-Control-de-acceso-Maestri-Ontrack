@@ -340,7 +340,8 @@ def enviar_excel():
                         'Fecha': row[3],
                         'Hora': row[4],
                         'Entrada': row[5],
-                        'Salida': row[6]
+                        'Salida': row[6],
+                        'Rango': row[7]
                     }
 
                     if fecha_filtro:
