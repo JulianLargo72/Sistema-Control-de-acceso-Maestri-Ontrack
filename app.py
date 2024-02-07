@@ -15,6 +15,7 @@ import pyqrcode
 from camera import generate_frames
 from qr import generar_qr, enviar_correo
 from excel import enviar_correo_excel
+import database as db
 
 app = Flask(__name__)
 app.secret_key = 'maestri'

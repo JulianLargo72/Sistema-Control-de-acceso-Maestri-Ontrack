@@ -12,6 +12,7 @@ from datetime import datetime
 import openpyxl as xl
 import time
 import pyqrcode
+import database 
 
 mañana = []
 tiempo_ultima_registro = {}
@@ -21,7 +22,8 @@ areas = {
     'A': 'Administrativa',
     'G': 'Gerencial',
     'C': 'Comercial',
-    'O': 'Operaciones'
+    'O': 'Operaciones',
+    'T': 'Tercero'
 }
 
 def obtener_area(codigo):
@@ -98,58 +100,65 @@ def generate_frames():
         wb, hojam = obtener_o_crear_hoja_excel(ruta_archivo_excel)
 
         for codes in decode(frame):
-            info = codes.data.decode('utf-8')
-            tipo = int(info[0:2])
-            letr = chr(tipo)
-            num = info[2:]
-            nombre = info.split('-')[1].strip()
-            pts = np.array([codes.polygon], np.int32)
-            xi, yi = codes.rect.left, codes.rect.top
-            pts = pts.reshape((-1, 1, 2))
-            codigo = letr + num
-            
-            # Imprimir el valor del código QR en la consola
-            print("Valor del código QR:", codigo)
+                info = codes.data.decode('utf-8')
+                tipo = int(info[0:2])
+                letr = chr(tipo)
+                num = info[2:]
+                nombre = info.split('-')[1].strip()
+                pts = np.array([codes.polygon], np.int32)
+                xi, yi = codes.rect.left, codes.rect.top
+                pts = pts.reshape((-1, 1, 2))
+                codigo = letr + num
+                
+                # Imprimir el valor del código QR en la consola
+                print("Valor del código QR:", codigo)
 
-            if 6 >= diasem >= 0:
-                cv2.polylines(frame, [pts], True, (255, 255, 0), 5)
+                if 6 >= diasem >= 0:
+                    cv2.polylines(frame, [pts], True, (255, 255, 0), 5)
 
-                if codigo not in mañana or (codigo in mañana and time.time() - tiempo_ultima_registro.get(codigo, 0) > 60):
-                    mañana.append(codigo)
-                    tiempo_ultima_registro[codigo] = time.time()
+                    if codigo not in mañana or (codigo in mañana and time.time() - tiempo_ultima_registro.get(codigo, 0) > 60):
+                        mañana.append(codigo)
+                        tiempo_ultima_registro[codigo] = time.time()
 
-                    # Obtener el área correspondiente al primer carácter del código
-                    area = obtener_area(codigo)
+                        # Obtener el área correspondiente al primer carácter del código
+                        area = obtener_area(codigo)
 
-                    codigo_despues_del_primer_digito = info.split('-')[0][2:].strip()
+                        codigo_despues_del_primer_digito = info.split('-')[0][2:].strip()
 
-                    # Buscar la hora de entrada en el archivo de Excel
-                    hora_entrada = None
-                    for row in hojam.iter_rows(min_row=2, max_col=6, max_row=hojam.max_row):
-                        if row[0].value == codigo_despues_del_primer_digito:
-                            # Verificar que la tupla tenga suficientes elementos antes de intentar acceder al índice 5
-                            if len(row) > 5:
-                                hora_entrada = row[5].value
-                            break
+                        # Buscar la hora de entrada en el archivo de Excel
+                        hora_entrada = None
+                        for row in hojam.iter_rows(min_row=2, max_col=6, max_row=hojam.max_row):
+                            if row[0].value == codigo_despues_del_primer_digito:
+                                # Verificar que la tupla tenga suficientes elementos antes de intentar acceder al índice 5
+                                if len(row) > 5:
+                                    hora_entrada = row[5].value
+                                break
 
-                    if hora_entrada is None:
-                        # Si no se encuentra la hora de entrada, usar la hora actual
-                        hora_entrada = time.strftime("%H:%M:%S", time.localtime())
+                        if hora_entrada is None:
+                            # Si no se encuentra la hora de entrada, usar la hora actual
+                            hora_entrada = time.strftime("%H:%M:%S", time.localtime())
 
-                    # Agregar la fila al archivo de Excel con código, nombre, área, fecha, hora de entrada y hora de salida
-                    rango = obtener_rango(hora_actual.strftime('%H:%M:%S'))
-                    hojam.append([codigo_despues_del_primer_digito, nombre, area, fecha, texth, hora_entrada, time.strftime("%H:%M:%S"), rango])
+                        # Agregar la fila al archivo de Excel con código, nombre, área, fecha, hora de entrada y hora de salida
+                        rango = obtener_rango(hora_actual.strftime('%H:%M:%S'))
+                        hojam.append([codigo_despues_del_primer_digito, nombre, area, fecha, texth, hora_entrada, time.strftime("%H:%M:%S"), rango])
 
-                    # Guardar los cambios en el archivo de Excel
-                    wb.save(ruta_archivo_excel)
+                        # Guardar los cambios en el archivo de Excel
+                        wb.save(ruta_archivo_excel)
 
-                    cv2.putText(frame, f"{letr}0{num}", (xi - 15, yi - 15), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 55, 0), 2)
-                    print("El usuario es accionista de la empresa \nNúmero de Identificación:", codigo, "Fecha de registro:", fecha, "Hora de registro:", texth)
+                        if area != 'Tercero':
+                            # Guardar el registro en la base de datos MySQL
+                            database.guardar_registro_en_mysql(codigo_despues_del_primer_digito, nombre, area, fecha, texth, hora_entrada, time.strftime("%H:%M:%S"), rango)
+                        else:
+                            # Guardar el registro en la tabla de terceros en la base de datos MySQL
+                            database.guardar_registro_tercero_en_mysql(codigo_despues_del_primer_digito, nombre, area, fecha, texth, hora_entrada, time.strftime("%H:%M:%S"), rango)
 
-                elif codigo in mañana:
-                    cv2.putText(frame, f"El ID {codigo}", (xi - 65, yi - 45), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
-                    cv2.putText(frame, "Registro Exitoso", (xi - 65, yi - 15), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
-                    print(mañana)
+                        cv2.putText(frame, f"{letr}0{num}", (xi - 15, yi - 15), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 55, 0), 2)
+                        print("El usuario es accionista de la empresa \nNúmero de Identificación:", codigo, "Fecha de registro:", fecha, "Hora de registro:", texth)
+
+                    elif codigo in mañana:
+                        cv2.putText(frame, f"El ID {codigo}", (xi - 65, yi - 45), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+                        cv2.putText(frame, "Registro Exitoso", (xi - 65, yi - 15), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+                        print(mañana)
 
         ret, jpeg = cv2.imencode('.jpg', frame)
         frame_bytes = jpeg.tobytes()
