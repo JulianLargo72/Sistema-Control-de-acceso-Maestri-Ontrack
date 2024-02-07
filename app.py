@@ -28,6 +28,14 @@ def mostrar_leer():
 def inicio():
     return render_template('index.html')
 
+areas = {
+    'A': 'Administrativa',
+    'G': 'Gerencial',
+    'C': 'Comercial',
+    'O': 'Operaciones',
+    'T': 'Tercero'
+}
+
 @app.route('/generar', methods=['GET', 'POST'])
 def generar():
     if request.method == 'POST':
@@ -43,13 +51,19 @@ def generar():
             # Verificar si el campo de correo está presente en el formulario
             destinatario = request.form.get('correo', '')  # Si no se proporciona, el valor será una cadena vacía
 
+            # Verificar si el prefijo está en el diccionario de áreas
+            area = areas.get(prefijo)
+            if area:
+                mensaje = f"QR generado para la identificación: {identificacion}, nombre: {nombre} y con un vinculo con la empresa de: {area}."
+            else:
+                mensaje = f"QR generado para la identificación: {identificacion} y el nombre: {nombre}."
+            
             # Enviar el correo electrónico solo si se proporciona el correo
             if destinatario:
-                enviar_correo(destinatario, "Codigo QR control de acceso Maestri Ontrack", f" Cordial saludo:\n\nTe informamos que el QR generado con la siguiente informacion ha sido registrado con exito!\n\nNombre: {nombre}\nIdentificación: {identificacion}\n\nA continuacion adjuntamos el codigo", qr_path)
+                enviar_correo(destinatario, "Codigo QR control de acceso Maestri Ontrack", f" Cordial saludo:\n\nTe informamos que el QR generado con la siguiente informacion ha sido registrado con exito!\n\nNombre: {nombre}\nVinculo: {area}\n Identificación: {identificacion}\n\nA continuacion adjuntamos el codigo", qr_path)
 
-            mensaje = f"QR generado para la identificación {identificacion} y el nombre {nombre}."
             if destinatario:
-                mensaje += f" Se ha enviado al correo {destinatario}."
+                mensaje += f" Se ha enviado al correo: {destinatario}."
             return render_template('generar.html', mensaje=mensaje, qr_path=qr_path)
         except ValueError as e:
             mensaje = str(e)

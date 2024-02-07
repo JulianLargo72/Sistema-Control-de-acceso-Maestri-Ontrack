@@ -55,7 +55,7 @@ def obtener_o_crear_hoja_excel(ruta_archivo_excel):
     except FileNotFoundError:
         wb = xl.Workbook()
         hojam = wb.create_sheet("Actual")
-        hojam.append(["Documento", "Nombre", "Area", "Fecha", "Hora Escaneo", "Hora Entrada", "Hora Salida", "Rango"])  # Encabezados
+        hojam.append(["Documento", "Nombre", "Vinculo", "Fecha", "Hora Escaneo", "Hora Entrada", "Hora Salida", "Rango"])  # Encabezados
         wb.save(ruta_archivo_excel)
     return wb, hojam
 
