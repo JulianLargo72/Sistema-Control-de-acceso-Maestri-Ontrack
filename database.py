@@ -1,4 +1,5 @@
 import mysql.connector
+import os
 
 # Configuración de la conexión a la base de datos MySQL
 mydb = mysql.connector.connect(
@@ -56,6 +57,29 @@ def obtener_usuario_por_id(id_usuario):
     except mysql.connector.Error as error:
         print("Error al obtener usuario de la base de datos:", error)
         return None
+    finally:
+        if 'cursor' in locals():
+            cursor.close()
+            
+def borrar_usuario(id_usuario, qr_path):
+    try:
+        # Eliminar usuario de la base de datos
+        cursor = mydb.cursor()
+        sql = "DELETE FROM usuarios WHERE id = %s"
+        cursor.execute(sql, (id_usuario,))
+        mydb.commit()
+        
+        # Eliminar imagen QR asociada
+        if qr_path:
+            # Construir la ruta completa del archivo QR
+            ruta_qr = os.path.join(os.getcwd(), qr_path)
+            # Verificar si el archivo existe y eliminarlo
+            if os.path.exists(ruta_qr):
+                os.remove(ruta_qr)
+        
+        print("Usuario y QR eliminados correctamente.")
+    except mysql.connector.Error as error:
+        print("Error al borrar usuario de la base de datos:", error)
     finally:
         if 'cursor' in locals():
             cursor.close()

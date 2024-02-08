@@ -189,6 +189,19 @@ def ver_usuario(id_usuario):
         return render_template('detalles_usuario.html', usuario=usuario)
     else:
         return "Usuario no encontrado"
+    
+@app.route('/eliminar_usuario/<int:id_usuario>')
+def eliminar_usuario(id_usuario):
+    # Obtener el usuario por su ID
+    usuario = database.obtener_usuario_por_id(id_usuario)
+
+    if usuario:
+        # Llamar a la función para borrar el usuario y la imagen QR
+        database.borrar_usuario(id_usuario, usuario['qr_path'])
+        # Redirigir a la página de lista de usuarios
+        return redirect(url_for('mostrar_usuarios'))
+    else:
+        return "Usuario no encontrado"
 
 if __name__ == '__main__':
     app.run(host='192.168.0.44', port=5000, debug=True)

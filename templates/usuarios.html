@@ -61,7 +61,6 @@
                     <th>Nombre</th>
                     <th>Área</th>
                     <th>Correo</th>
-                    <th>QR Path</th>
                     <th>Acciones</th>
                   </tr>
                 </thead>
@@ -73,17 +72,12 @@
                     <td>{{ usuario['nombre'] }}</td>
                     <td>{{ usuario['area'] }}</td>
                     <td>{{ usuario['correo'] }}</td>
-                    <td>{{ usuario['qr_path'] }}</td>
                     <td>
                         <div class="btn-group" role="group">
                             <form action="/ver_usuario/{{ usuario['id'] }}" method="get">
                                 <button class="btn btn-info btn-sm mx-1"><i class="bi bi-eye"></i></button>
                             </form>
-                            <form action="/editar_usuario" method="post">
-                                <input type="hidden" name="id" value="{{ usuario['id'] }}">
-                                <button class="btn btn-warning btn-sm mx-1"><i class="bi bi-pen"></i></button>
-                            </form>
-                            <form action="/eliminar_usuario" method="post">
+                            <form action="/eliminar_usuario/{{ usuario['id'] }}" method="get">
                                 <input type="hidden" name="id" value="{{ usuario['id'] }}">
                                 <button class="btn btn-danger btn-sm mx-1"><i class="bi bi-trash3-fill"></i></button>
                             </form>
