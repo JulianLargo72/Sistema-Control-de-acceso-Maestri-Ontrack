@@ -175,6 +175,11 @@ def enviar_excel():
 
         # Devuelve la plantilla con la fecha actual y la alerta de éxito
         return render_template('enviar_correo.html', registros=[], fecha_actual=datetime.today().strftime('%Y-%m-%d'))
+    
+@app.route('/usuarios')
+def mostrar_usuarios():
+    usuarios = database.obtener_usuarios()
+    return render_template('usuarios.html', usuarios=usuarios)
 
 if __name__ == '__main__':
     app.run(host='192.168.0.44', port=5000, debug=True)

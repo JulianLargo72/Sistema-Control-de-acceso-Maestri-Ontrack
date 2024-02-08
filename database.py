@@ -32,6 +32,20 @@ def insertar_usuario(identificacion, nombre, area, correo, qr_path):
     mydb.commit()
     cursor.close()
     
+# Función para obtener todos los usuarios de la base de datos
+def obtener_usuarios():
+    try:
+        cursor = mydb.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM usuarios")
+        usuarios = cursor.fetchall()
+        return usuarios
+    except mysql.connector.Error as error:
+        print("Error al obtener usuarios de la base de datos:", error)
+        return []
+    finally:
+        if 'cursor' in locals():
+            cursor.close()
+
 
     
     
