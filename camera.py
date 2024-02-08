@@ -26,6 +26,16 @@ areas = {
     'T': 'Tercero'
 }
 
+# Variable global para mantener el último ID utilizado
+ultimo_id = 1
+
+def obtener_id():
+    global ultimo_id
+    id_actual = ultimo_id
+    ultimo_id += 1
+    return id_actual
+
+
 def obtener_area(codigo):
     primer_caracter = codigo[0]
     return areas.get(primer_caracter, 'Desconocida')
@@ -55,7 +65,7 @@ def obtener_o_crear_hoja_excel(ruta_archivo_excel):
     except FileNotFoundError:
         wb = xl.Workbook()
         hojam = wb.create_sheet("Actual")
-        hojam.append(["Documento", "Nombre", "Vinculo", "Fecha", "Hora Escaneo", "Hora Entrada", "Hora Salida", "Rango"])  # Encabezados
+        hojam.append(["No", "Documento", "Nombre", "Vinculo", "Fecha", "Hora Escaneo", "Hora Entrada", "Hora Salida", "Rango"])  # Encabezados
         wb.save(ruta_archivo_excel)
     return wb, hojam
 
@@ -127,11 +137,11 @@ def generate_frames():
 
                         # Buscar la hora de entrada en el archivo de Excel
                         hora_entrada = None
-                        for row in hojam.iter_rows(min_row=2, max_col=6, max_row=hojam.max_row):
-                            if row[0].value == codigo_despues_del_primer_digito:
+                        for row in hojam.iter_rows(min_row=2, max_col=7, max_row=hojam.max_row):
+                            if row[1].value == codigo_despues_del_primer_digito:
                                 # Verificar que la tupla tenga suficientes elementos antes de intentar acceder al índice 5
-                                if len(row) > 5:
-                                    hora_entrada = row[5].value
+                                if len(row) > 6:
+                                    hora_entrada = row[6].value
                                 break
 
                         if hora_entrada is None:
@@ -140,7 +150,7 @@ def generate_frames():
 
                         # Agregar la fila al archivo de Excel con código, nombre, área, fecha, hora de entrada y hora de salida
                         rango = obtener_rango(hora_actual.strftime('%H:%M:%S'))
-                        hojam.append([codigo_despues_del_primer_digito, nombre, area, fecha, texth, hora_entrada, time.strftime("%H:%M:%S"), rango])
+                        hojam.append([obtener_id(), codigo_despues_del_primer_digito, nombre, area, fecha, texth, hora_entrada, time.strftime("%H:%M:%S"), rango])
 
                         # Guardar los cambios en el archivo de Excel
                         wb.save(ruta_archivo_excel)

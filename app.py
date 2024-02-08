@@ -93,14 +93,15 @@ def mostrar_registros():
 
             for row in hoja_actual.iter_rows(min_row=2, values_only=True):
                 registro = {
-                    'Identificacion': row[0],
-                    'Nombre': row[1],
-                    'Area': row[2],
-                    'Fecha': row[3],
-                    'Hora': row[4],
-                    'Entrada': row[5],
-                    'Salida': row[6],
-                    'Rango': row[7]
+                    'Id': row[0],
+                    'Identificacion': row[1],
+                    'Nombre': row[2],
+                    'Area': row[3],
+                    'Fecha': row[4],
+                    'Hora': row[5],
+                    'Entrada': row[6],
+                    'Salida': row[7],
+                    'Rango': row[8]
                 }
 
                 # Filtra los registros por fecha si se proporciona una fecha de filtro

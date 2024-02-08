@@ -64,6 +64,7 @@
           <table class="table table-success table-striped text-center table-hover table-sm" id="registros">
               <thead class="thead-dark">
                   <tr>
+                      <th>No</th>
                       <th>Documento</th>
                       <th>Nombre</th>
                       <th>Vinculo</th>
@@ -77,6 +78,7 @@
               <tbody>
                   {% for registro in registros %}
                       <tr>
+                        <td>{{ registro['Id'] }}</td>
                           <td>{{ registro['Identificacion'] }}</td>
                           <td>{{ registro['Nombre'] }}</td>
                           <td>{{ registro['Area'] }}</td>
