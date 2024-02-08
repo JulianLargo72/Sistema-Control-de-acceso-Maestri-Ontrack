@@ -15,7 +15,7 @@ import pyqrcode
 from camera import generate_frames
 from qr import generar_qr, enviar_correo
 from excel import enviar_correo_excel
-import database as db
+import database
 
 app = Flask(__name__)
 app.secret_key = 'maestri'
@@ -57,6 +57,9 @@ def generar():
                 mensaje = f"QR generado para la identificación: {identificacion}, nombre: {nombre} y con un vinculo con la empresa de: {area}."
             else:
                 mensaje = f"QR generado para la identificación: {identificacion} y el nombre: {nombre}."
+                
+            # Insertar datos en la tabla usuarios
+            database.insertar_usuario(identificacion, nombre, area, destinatario, qr_path)
             
             # Enviar el correo electrónico solo si se proporciona el correo
             if destinatario:

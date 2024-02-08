@@ -24,4 +24,14 @@ def guardar_registro_tercero_en_mysql(identificacion, nombre, area, fecha, hora_
     mydb.commit()
     cursor.close()
     
+def insertar_usuario(identificacion, nombre, area, correo, qr_path):
+    cursor = mydb.cursor()
+    sql = "INSERT INTO usuarios (identificacion, nombre, area, correo, qr_path) VALUES (%s, %s, %s, %s, %s)"
+    val = (identificacion, nombre, area, correo, qr_path)
+    cursor.execute(sql, val)
+    mydb.commit()
+    cursor.close()
+    
+
+    
     

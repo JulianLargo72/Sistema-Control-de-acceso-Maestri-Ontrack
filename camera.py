@@ -145,12 +145,17 @@ def generate_frames():
                         # Guardar los cambios en el archivo de Excel
                         wb.save(ruta_archivo_excel)
 
-                        if area != 'Tercero':
-                            # Guardar el registro en la base de datos MySQL
+                        if area == 'Tercero':
+                            # Guardar el registro en la tabla de registros en la base de datos MySQL
                             database.guardar_registro_en_mysql(codigo_despues_del_primer_digito, nombre, area, fecha, texth, hora_entrada, time.strftime("%H:%M:%S"), rango)
                         else:
-                            # Guardar el registro en la tabla de terceros en la base de datos MySQL
+                            # Si el área no es 'Tercero', guardar el registro en la tabla de registros
+                            database.guardar_registro_en_mysql(codigo_despues_del_primer_digito, nombre, area, fecha, texth, hora_entrada, time.strftime("%H:%M:%S"), rango)
+
+                        # Si el área es 'Tercero', guardar el registro también en la tabla de tercero
+                        if area == 'Tercero':
                             database.guardar_registro_tercero_en_mysql(codigo_despues_del_primer_digito, nombre, area, fecha, texth, hora_entrada, time.strftime("%H:%M:%S"), rango)
+
 
                         cv2.putText(frame, f"{letr}0{num}", (xi - 15, yi - 15), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 55, 0), 2)
                         print("El usuario es accionista de la empresa \nNúmero de Identificación:", codigo, "Fecha de registro:", fecha, "Hora de registro:", texth)
