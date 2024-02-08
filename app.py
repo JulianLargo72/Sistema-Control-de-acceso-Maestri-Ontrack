@@ -182,5 +182,13 @@ def mostrar_usuarios():
     usuarios = database.obtener_usuarios()
     return render_template('usuarios.html', usuarios=usuarios)
 
+@app.route('/ver_usuario/<int:id_usuario>')
+def ver_usuario(id_usuario):
+    usuario = database.obtener_usuario_por_id(id_usuario)
+    if usuario:
+        return render_template('detalles_usuario.html', usuario=usuario)
+    else:
+        return "Usuario no encontrado"
+
 if __name__ == '__main__':
     app.run(host='192.168.0.44', port=5000, debug=True)

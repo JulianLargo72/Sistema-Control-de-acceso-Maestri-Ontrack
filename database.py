@@ -46,6 +46,18 @@ def obtener_usuarios():
         if 'cursor' in locals():
             cursor.close()
 
-
+def obtener_usuario_por_id(id_usuario):
+    try:
+        cursor = mydb.cursor(dictionary=True)
+        sql = "SELECT * FROM usuarios WHERE id = %s"
+        cursor.execute(sql, (id_usuario,))
+        usuario = cursor.fetchone()
+        return usuario
+    except mysql.connector.Error as error:
+        print("Error al obtener usuario de la base de datos:", error)
+        return None
+    finally:
+        if 'cursor' in locals():
+            cursor.close()
     
     
