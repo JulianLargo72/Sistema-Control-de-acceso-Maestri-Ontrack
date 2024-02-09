@@ -219,5 +219,56 @@ def filtrar_registros():
     registros_filtrados = database.obtener_registros_por_fecha(fecha_filtro)
     return render_template('registros_bd.html', registros=registros_filtrados, fecha_filtro=fecha_filtro)
 
+@app.route('/crear_registro', methods=['GET', 'POST'])
+def crear_registro():
+    if request.method == 'POST':
+        identificacion = request.form['identificacion']
+        nombre = request.form['nombre']
+        area = request.form['area']
+        fecha = request.form['fecha']
+        hora_escaneo = request.form['hora_escaneo']
+        hora_entrada = request.form['hora_entrada']
+        hora_salida = request.form['hora_salida']
+        rango = request.form['rango']
+        if database.crear_registro(identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango):
+            # Redirige a una página exitosa si la creación del registro fue exitosa
+            return redirect(url_for('mostrar_registros_bd'))
+        else:
+            # Redirige a una página de error si la creación del registro falló
+            return redirect(url_for('crear_registro'))
+    else:
+        # Obtener la lista de usuarios desde la base de datos
+        usuarios = database.obtener_usuarios()
+        # Renderizar la vista HTML para crear un nuevo registro, pasando la lista de usuarios al template
+        return render_template('crear_registro.html', usuarios=usuarios)
+
+
+@app.route('/editar_registro/<int:id_registro>', methods=['GET', 'POST'])
+def editar_registro(id_registro):
+    if request.method == 'POST':
+        # Obtener los datos del formulario de edición
+        identificacion = request.form['identificacion']
+        nombre = request.form['nombre']
+        area = request.form['area']
+        fecha = request.form['fecha']
+        hora_escaneo = request.form['hora_escaneo']
+        hora_entrada = request.form['hora_entrada']
+        hora_salida = request.form['hora_salida']
+        rango = request.form['rango']
+
+        # Llamar a la función para editar el registro en la base de datos
+        database.editar_registro(id_registro, identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango)
+
+        # Redireccionar a la página de lista de registros después de la edición
+        return redirect(url_for('mostrar_registros_bd'))
+    else:
+        # Obtener el registro a editar de la base de datos
+        registro = database.obtener_registro_por_id(id_registro)
+        usuarios = database.obtener_usuarios()
+        return render_template('editar_registro.html', registro=registro, usuarios=usuarios)
+
+
+
+
 if __name__ == '__main__':
     app.run(host='192.168.0.44', port=5000, debug=True)

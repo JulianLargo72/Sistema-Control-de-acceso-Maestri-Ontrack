@@ -109,3 +109,47 @@ def obtener_registros_por_fecha(fecha):
     finally:
         if 'cursor' in locals():
             cursor.close()
+            
+def editar_registro(id_registro, identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango):
+    try:
+        cursor = mydb.cursor()
+        sql = "UPDATE registros SET identificacion = %s, nombre = %s, area = %s, fecha = %s, hora_escaneo = %s, hora_entrada = %s, hora_salida = %s, rango = %s WHERE id = %s"
+        val = (identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango, id_registro)
+        cursor.execute(sql, val)
+        mydb.commit()
+        print("Registro editado correctamente.")
+    except mysql.connector.Error as error:
+        print("Error al editar registro en la base de datos:", error)
+    finally:
+        if 'cursor' in locals():
+            cursor.close()
+            
+def obtener_registro_por_id(id_registro):
+    try:
+        cursor = mydb.cursor(dictionary=True)
+        sql = "SELECT * FROM registros WHERE id = %s"
+        cursor.execute(sql, (id_registro,))
+        registro = cursor.fetchone()
+        return registro
+    except mysql.connector.Error as error:
+        print("Error al obtener registro de la base de datos:", error)
+        return None
+    finally:
+        if 'cursor' in locals():
+            cursor.close()
+
+
+def crear_registro(identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango):
+    try:
+        cursor = mydb.cursor()
+        sql = "INSERT INTO registros (identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+        val = (identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango)
+        cursor.execute(sql, val)
+        mydb.commit()
+        cursor.close()
+        print("Registro creado exitosamente.")
+        return True
+    except mysql.connector.Error as error:
+        print("Error al crear registro en la base de datos:", error)
+        return False
+
