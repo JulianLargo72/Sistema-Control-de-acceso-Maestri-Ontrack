@@ -202,6 +202,22 @@ def eliminar_usuario(id_usuario):
         return redirect(url_for('mostrar_usuarios'))
     else:
         return "Usuario no encontrado"
+    
+@app.route('/registros_bd')
+def mostrar_registros_bd():
+    registros = database.obtener_registros()
+    return render_template('registros_bd.html', registros=registros)
+
+@app.route('/filtrar_registros', methods=['GET'])
+def filtrar_registros():
+    fecha_filtro = request.args.get('fecha_filtro')
+    
+    # Si no se proporciona fecha_filtro, utilizar la fecha de hoy
+    if not fecha_filtro:
+        fecha_filtro = datetime.now().strftime('%Y-%m-%d')
+
+    registros_filtrados = database.obtener_registros_por_fecha(fecha_filtro)
+    return render_template('registros_bd.html', registros=registros_filtrados, fecha_filtro=fecha_filtro)
 
 if __name__ == '__main__':
     app.run(host='192.168.0.44', port=5000, debug=True)

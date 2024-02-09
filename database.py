@@ -33,7 +33,6 @@ def insertar_usuario(identificacion, nombre, area, correo, qr_path):
     mydb.commit()
     cursor.close()
     
-# Función para obtener todos los usuarios de la base de datos
 def obtener_usuarios():
     try:
         cursor = mydb.cursor(dictionary=True)
@@ -84,4 +83,29 @@ def borrar_usuario(id_usuario, qr_path):
         if 'cursor' in locals():
             cursor.close()
     
-    
+def obtener_registros():
+    try:
+        cursor = mydb.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM registros")
+        registros = cursor.fetchall()
+        return registros
+    except mysql.connector.Error as error:
+        print("Error al obtener usuarios de la base de datos:", error)
+        return []
+    finally:
+        if 'cursor' in locals():
+            cursor.close()
+            
+def obtener_registros_por_fecha(fecha):
+    try:
+        cursor = mydb.cursor(dictionary=True)
+        sql = "SELECT * FROM registros WHERE fecha = %s"
+        cursor.execute(sql, (fecha,))
+        registros = cursor.fetchall()
+        return registros
+    except mysql.connector.Error as error:
+        print("Error al obtener registros de la base de datos:", error)
+        return []
+    finally:
+        if 'cursor' in locals():
+            cursor.close()

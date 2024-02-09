@@ -1,43 +1,46 @@
-Guía de Instalación de Proyecto Python para Windows
+<----------Guía de Instalación de Proyecto Python para Windows--------->
 
 1. Instalar Python:
-Asegúrate de tener Python instalado en tu sistema. Puedes descargar la última versión desde python.org. Durante la instalación, marca la opción que dice "Add Python to PATH" para facilitar el uso desde la línea de comandos.
+Asegúrate de tener Python instalado en tu sistema. Puedes descargar la última versión desde python.org. 
+Durante la instalación, marca la opción que dice "Add Python to PATH" para facilitar el uso desde la línea de comandos.
+
+
 
 2. Instalar Dependencias del Proyecto:
-Con el entorno virtual activado, instala las dependencias del proyecto. Esto generalmente se hace utilizando un archivo llamado requirements.txt. Ubícate en el directorio del proyecto y ejecuta:
+Instala las dependencias del proyecto. Esto generalmente se hace utilizando un archivo llamado requirements.txt. 
+Ubícate en el directorio del proyecto y ejecuta:
 
 pip install -r requirements.txt
+
+
 
 3. Ejecutar el Proyecto:
 Una vez que todas las dependencias estén instaladas, puedes ejecutar el proyecto. 
 
 python leer.py
 
-4. Acceder al Proyecto:
-Abre tu navegador web y visita la dirección proporcionada por tu aplicación o script (por ejemplo, http://192.168.0.44:5000). ESTA DIRECCION DEPENDERA DE LA DIRECCION IPV4 DEL DISPOSITIVO, PUEDES VERIFICARLA COLOCANDO IPCONFIG EN LA TERMINAL.
 
-
-Guía de Instalación de Proyecto Python para Linux
-
-1. Instalar Python:
-La mayoría de las distribuciones de Linux ya tienen Python instalado. Puedes verificar con:
-
-python3 --version
-
-Si no está instalado, puedes instalarlo con el administrador de paquetes de tu distribución (por ejemplo, apt para Ubuntu):
-
-sudo apt update
-sudo apt install python3
-
-2. Instalar Dependencias del Proyecto:
-Con el entorno virtual activado, instala las dependencias del proyecto desde el archivo requirements.txt:
-
-pip install -r requirements.txt
-
-3. Ejecutar el Proyecto:
-Una vez que todas las dependencias estén instaladas, puedes ejecutar el proyecto, utiliza:
-
-python leer.py
 
 4. Acceder al Proyecto:
-Abre tu navegador web y visita la dirección proporcionada por tu aplicación o script (por ejemplo, http://192.168.0.44:5000). ESTA DIRECCION DEPENDERA DE LA DIRECCION IPV4 DEL DISPOSITIVO, PUEDES VERIFICARLA COLOCANDO IPCONFIG EN LA TERMINAL.
+Abre tu navegador web y visita la dirección proporcionada por tu aplicación o script (por ejemplo, http://192.168.0.250:5000). 
+ESTA DIRECCION DEPENDERA DE LA DIRECCION IPV4 DEL DISPOSITIVO, PUEDES VERIFICARLA COLOCANDO IPCONFIG EN LA TERMINAL.
+
+
+
+
+
+
+<---------SINCRONIZAR ULTIMOS CAMBIOS CON GIT BASH---------->
+
+1.Eliminar los cambios no guardados y revertirlos al estado en el que estaban la última vez, puedes usar este comando en la terminal de git bash
+
+
+git checkout -- .
+
+
+
+2. Obtener los cambios más recientes: Si no has obtenido los cambios más recientes del repositorio remoto, puedes hacerlo con el comando:
+
+git pull origin produccion
+
+Esto traerá los cambios más recientes del repositorio remoto a tu rama local.

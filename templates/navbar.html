@@ -1,0 +1,46 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-success">
+    <div class="container">
+      <a class="navbar-brand" href="/">
+        <img src="/static/imagenes/horizontal.png" alt="Logo" width="50" height="35" class="d-inline-block align-top">
+        CONTROL DE ACCESO
+      </a>
+  
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+  
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/usuarios">Usuarios</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/leer">Leer QR</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/registros">Registros Excel</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/enviar_excel">Enviar Registros</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/registros_bd">Registros base de datos</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+      $(document).ready(function() {
+        // Colapsamos la barra de navegación al cargar la página
+        $("#navbarSupportedContent").collapse("hide");
+      
+        // Escuchamos el evento click del navbar-toggler
+        $(".navbar-toggler").click(function() {
+          // Colapsamos o expandimos la barra de navegación
+          $("#navbarSupportedContent").collapse("toggle");
+        });
+      });
+      </script>
