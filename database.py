@@ -153,3 +153,9 @@ def crear_registro(identificacion, nombre, area, fecha, hora_escaneo, hora_entra
         print("Error al crear registro en la base de datos:", error)
         return False
 
+
+def borrar_registro(id_registro):
+    cursor = mydb.cursor()
+    sql = "DELETE FROM registros WHERE id = %s"
+    cursor.execute(sql, (id_registro,))
+    mydb.commit()

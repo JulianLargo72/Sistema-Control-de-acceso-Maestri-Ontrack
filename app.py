@@ -267,7 +267,13 @@ def editar_registro(id_registro):
         usuarios = database.obtener_usuarios()
         return render_template('editar_registro.html', registro=registro, usuarios=usuarios)
 
-
+@app.route('/borrar_registro/<int:id_registro>', methods=['GET', 'POST'])
+def borrar_registro_route(id_registro):
+    if request.method == 'POST':
+        database.borrar_registro(id_registro)
+        return redirect(url_for('mostrar_registros_bd'))
+    else:
+        return "Método no permitido", 405
 
 
 if __name__ == '__main__':
