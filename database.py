@@ -9,6 +9,35 @@ mydb = mysql.connector.connect(
     database="registros_qr"
 )
 
+def ejecutar_consulta_sql(query):
+    try:
+        # Conexión a la base de datos
+        conexion = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="",
+            database="registros_qr"
+        )
+        
+        # Crear un cursor para ejecutar consultas
+        cursor = conexion.cursor()
+
+        # Ejecutar la consulta
+        cursor.execute(query)
+
+        # Obtener los resultados de la consulta
+        resultados = cursor.fetchall()
+
+        # Cerrar el cursor y la conexión
+        cursor.close()
+        conexion.close()
+
+        return resultados
+
+    except mysql.connector.Error as error:
+        print("Error al ejecutar la consulta SQL:", error)
+        return None
+    
 def guardar_registro_en_mysql(identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango):
     cursor = mydb.cursor()
     sql = "INSERT INTO registros (identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"

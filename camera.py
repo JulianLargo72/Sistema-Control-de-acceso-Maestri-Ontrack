@@ -46,29 +46,6 @@ def infhora():
     hora = inf.strftime('%H:%M:%S')
     return hora, fecha
 
-# Especificar el nombre de la nueva carpeta para los registros de Excel
-nombre_carpeta_registros = 'registros_excel'
-
-# Crear la carpeta si no existe
-if not os.path.exists(nombre_carpeta_registros):
-    os.makedirs(nombre_carpeta_registros)
-
-def obtener_ruta_archivo_excel():
-    hora, fecha_actual = infhora()
-    ruta_archivo_excel = os.path.join(nombre_carpeta_registros, f"{fecha_actual}.xlsx")
-    return ruta_archivo_excel
-
-def obtener_o_crear_hoja_excel(ruta_archivo_excel):
-    try:
-        wb = xl.load_workbook(ruta_archivo_excel)
-        hojam = wb["Actual"]
-    except FileNotFoundError:
-        wb = xl.Workbook()
-        hojam = wb.create_sheet("Actual")
-        hojam.append(["No", "Documento", "Nombre", "Vinculo", "Fecha", "Hora Escaneo", "Hora Entrada", "Hora Salida", "Rango"])  # Encabezados
-        wb.save(ruta_archivo_excel)
-    return wb, hojam
-
 def obtener_rango(hora_actual):
     hora_entrada = datetime.strptime(hora_actual, '%H:%M:%S')
     if datetime.strptime('07:00:00', '%H:%M:%S') <= hora_entrada <= datetime.strptime('09:00:00', '%H:%M:%S'):
@@ -82,8 +59,23 @@ def obtener_rango(hora_actual):
     else:
         return 'Revisar'
 
+def obtener_hora_entrada_desde_db(identificacion):
+    # Realiza una consulta SQL para obtener la hora de entrada más reciente para la identificación dada
+    query = f"SELECT hora_entrada FROM registros WHERE identificacion = '{identificacion}' ORDER BY id DESC LIMIT 1"
+    
+    # Ejecutar la consulta y obtener los resultados
+    resultados = database.ejecutar_consulta_sql(query)
+    
+    if resultados:
+        # Si hay resultados, la hora de entrada es el primer elemento del primer resultado
+        hora_entrada = resultados[0][0]
+        return hora_entrada
+    else:
+        # Si no hay resultados, retornar None
+        return None
+
 def generate_frames():
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(0)
     while True:
         ret, frame = cap.read()
         
@@ -105,9 +97,6 @@ def generate_frames():
         # Formatear la hora, minutos y segundos con dos dígitos
         texth = hora_actual.strftime('%H:%M:%S')
         print(texth)
-
-        ruta_archivo_excel = obtener_ruta_archivo_excel()
-        wb, hojam = obtener_o_crear_hoja_excel(ruta_archivo_excel)
 
         for codes in decode(frame):
                 info = codes.data.decode('utf-8')
@@ -135,36 +124,15 @@ def generate_frames():
 
                         codigo_despues_del_primer_digito = info.split('-')[0][2:].strip()
 
-                        # Buscar la hora de entrada en el archivo de Excel
-                        hora_entrada = None
-                        for row in hojam.iter_rows(min_row=2, max_col=7, max_row=hojam.max_row):
-                            if row[1].value == codigo_despues_del_primer_digito:
-                                # Verificar que la tupla tenga suficientes elementos antes de intentar acceder al índice 5
-                                if len(row) > 6:
-                                    hora_entrada = row[6].value
-                                break
+                        # Buscar la hora de entrada en la base de datos
+                        hora_entrada = obtener_hora_entrada_desde_db(codigo_despues_del_primer_digito)
 
-                        if hora_entrada is None:
-                            # Si no se encuentra la hora de entrada, usar la hora actual
-                            hora_entrada = time.strftime("%H:%M:%S", time.localtime())
-
-                        # Agregar la fila al archivo de Excel con código, nombre, área, fecha, hora de entrada y hora de salida
-                        rango = obtener_rango(hora_actual.strftime('%H:%M:%S'))
-                        hojam.append([obtener_id(), codigo_despues_del_primer_digito, nombre, area, fecha, texth, hora_entrada, time.strftime("%H:%M:%S"), rango])
-
-                        # Guardar los cambios en el archivo de Excel
-                        wb.save(ruta_archivo_excel)
-
-                        if area == 'Tercero':
-                            # Guardar el registro en la tabla de registros en la base de datos MySQL
-                            database.guardar_registro_en_mysql(codigo_despues_del_primer_digito, nombre, area, fecha, texth, hora_entrada, time.strftime("%H:%M:%S"), rango)
-                        else:
-                            # Si el área no es 'Tercero', guardar el registro en la tabla de registros
-                            database.guardar_registro_en_mysql(codigo_despues_del_primer_digito, nombre, area, fecha, texth, hora_entrada, time.strftime("%H:%M:%S"), rango)
+                        # Guardar el registro en la base de datos
+                        database.guardar_registro_en_mysql(codigo_despues_del_primer_digito, nombre, area, fecha, texth, hora_entrada, time.strftime("%H:%M:%S"), obtener_rango(hora_actual.strftime('%H:%M:%S')))
 
                         # Si el área es 'Tercero', guardar el registro también en la tabla de tercero
                         if area == 'Tercero':
-                            database.guardar_registro_tercero_en_mysql(codigo_despues_del_primer_digito, nombre, area, fecha, texth, hora_entrada, time.strftime("%H:%M:%S"), rango)
+                            database.guardar_registro_tercero_en_mysql(codigo_despues_del_primer_digito, nombre, area, fecha, texth, hora_entrada, time.strftime("%H:%M:%S"), obtener_rango(hora_actual.strftime('%H:%M:%S')))
 
 
                         cv2.putText(frame, f"{letr}0{num}", (xi - 15, yi - 15), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 55, 0), 2)

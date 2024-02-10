@@ -76,106 +76,6 @@ def generar():
 @app.route('/video_feed')
 def video_feed():
     return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
-
-@app.route('/registros', methods=['GET'])
-def mostrar_registros():
-    fecha_filtro = request.args.get('fecha', datetime.today().strftime('%Y-%m-%d'))
-    carpeta_registros = 'registros_excel'
-    
-    registros = []
-
-    for archivo_excel in os.listdir(carpeta_registros):
-        ruta_archivo_excel = os.path.join(carpeta_registros, archivo_excel)
-
-        try:
-            wb = xl.load_workbook(ruta_archivo_excel)
-            hoja_actual = wb['Actual']
-
-            for row in hoja_actual.iter_rows(min_row=2, values_only=True):
-                registro = {
-                    'Id': row[0],
-                    'Identificacion': row[1],
-                    'Nombre': row[2],
-                    'Area': row[3],
-                    'Fecha': row[4],
-                    'Hora': row[5],
-                    'Entrada': row[6],
-                    'Salida': row[7],
-                    'Rango': row[8]
-                }
-
-                # Filtra los registros por fecha si se proporciona una fecha de filtro
-                if fecha_filtro:
-                    if registro['Fecha'] == fecha_filtro:
-                        registros.append(registro)
-                else:
-                    registros.append(registro)
-
-        except Exception as e:
-            print(f"Error al procesar el archivo {archivo_excel}: {e}")
-
-    return render_template('registros.html', registros=registros, fecha_actual=datetime.today().strftime('%Y-%m-%d'))
-
-@app.route('/enviar_excel', methods=['GET', 'POST'])
-def enviar_excel():
-    carpeta_registros = 'registros_excel'
-    fecha_filtro = datetime.today().strftime('%Y-%m-%d')
-    registros = []  # Inicializa la variable registros aquí
-
-    if request.method == 'GET':
-        fecha_filtro = request.args.get('fecha', fecha_filtro)
-
-        try:
-            archivos_excel = [archivo for archivo in os.listdir(carpeta_registros) if archivo.endswith('.xlsx')]
-        except FileNotFoundError:
-            flash('No se encontraron archivos de registro.')
-            return render_template('enviar_correo.html', registros=registros, fecha_actual=datetime.today().strftime('%Y-%m-%d'))
-
-        for archivo_excel in archivos_excel:
-            ruta_archivo_excel = os.path.join(carpeta_registros, archivo_excel)
-
-            try:
-                wb = xl.load_workbook(ruta_archivo_excel)
-                hoja_actual = wb['Actual']
-
-                for row in hoja_actual.iter_rows(min_row=2, values_only=True):
-                    registro = {
-                        'Identificacion': row[0],
-                        'Nombre': row[1],
-                        'Area': row[2],
-                        'Fecha': row[3],
-                        'Hora': row[4],
-                        'Entrada': row[5],
-                        'Salida': row[6],
-                        'Rango': row[7]
-                    }
-
-                    if fecha_filtro:
-                        if registro['Fecha'] == fecha_filtro:
-                            registros.append(registro)
-                    else:
-                        registros.append(registro)
-
-            except Exception as e:
-                print(f"Error al procesar el archivo {archivo_excel}: {e}")
-
-        return render_template('enviar_correo.html', registros=registros, fecha_actual=datetime.today().strftime('%Y-%m-%d'))
-
-    elif request.method == 'POST':
-        correo_destinatario = request.form.get('correo_destinatario')
-        fecha_filtro = request.form.get('fecha', fecha_filtro)
-
-        archivo_a_enviar = os.path.join(carpeta_registros, f'{fecha_filtro}.xlsx')
-
-        try:
-            enviar_correo_excel(correo_destinatario, 'Archivo Control de Acceso', f"Cordial saludo,\n\nA continuacion adjuntamos el archivo de control de acceso correspondiente al registro de la fecha {fecha_filtro}", archivo_a_enviar)
-            flash('Correo enviado exitosamente.', 'success')  # Agrega la alerta de éxito
-        except FileNotFoundError:
-            flash('El archivo de registro no se encontró.')
-            return redirect(url_for('enviar_excel'))
-
-        # Devuelve la plantilla con la fecha actual y la alerta de éxito
-        return render_template('enviar_correo.html', registros=[], fecha_actual=datetime.today().strftime('%Y-%m-%d'))
     
 @app.route('/usuarios')
 def mostrar_usuarios():
@@ -277,4 +177,4 @@ def borrar_registro_route(id_registro):
 
 
 if __name__ == '__main__':
-    app.run(host='192.168.0.44', port=5000, debug=True)
+    app.run(host='192.168.1.53', port=5000, debug=True)
