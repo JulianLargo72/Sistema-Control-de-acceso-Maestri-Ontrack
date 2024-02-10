@@ -289,7 +289,7 @@ def editar_tercero(id_tercero):
 def borrar_tercero_route(id_tercero):
     if request.method == 'POST':
         database.borrar_tercero(id_tercero)
-        return redirect(url_for('mostrar_tercero'))
+        return redirect(url_for('mostrar_terceros'))
     else:
         return "Método no permitido", 405
     
