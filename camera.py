@@ -60,8 +60,8 @@ def obtener_rango(hora_actual):
         return 'Revisar'
 
 def obtener_hora_entrada_desde_db(identificacion):
-    # Realiza una consulta SQL para obtener la hora de entrada más reciente para la identificación dada
-    query = f"SELECT hora_entrada FROM registros WHERE identificacion = '{identificacion}' ORDER BY id DESC LIMIT 1"
+    # Realizar una consulta SQL para obtener el primer registro de la identificación dada
+    query = f"SELECT hora_entrada FROM registros WHERE identificacion = '{identificacion}' ORDER BY id ASC LIMIT 1"
     
     # Ejecutar la consulta y obtener los resultados
     resultados = database.ejecutar_consulta_sql(query)
@@ -71,8 +71,10 @@ def obtener_hora_entrada_desde_db(identificacion):
         hora_entrada = resultados[0][0]
         return hora_entrada
     else:
-        # Si no hay resultados, retornar None
-        return None
+        # Si no hay resultados, retornar la hora actual
+        return datetime.now().strftime('%H:%M:%S')
+
+
 
 def generate_frames():
     cap = cv2.VideoCapture(0)
