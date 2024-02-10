@@ -105,6 +105,8 @@ def eliminar_usuario(id_usuario):
     else:
         return "Usuario no encontrado"
     
+    
+    
 @app.route('/registros_bd')
 def mostrar_registros_bd():
     registros = database.obtener_registros()
@@ -195,6 +197,102 @@ def borrar_registro_route(id_registro):
         return redirect(url_for('mostrar_registros_bd'))
     else:
         return "Método no permitido", 405
+    
+    
+    
+    
+    
+@app.route('/terceros')
+def mostrar_terceros():
+    terceros = database.obtener_tercero()
+    return render_template('terceros.html', terceros=terceros)
+
+@app.route('/filtrar_terceros', methods=['GET'])
+def filtrar_terceros():
+    fecha_inicio = request.args.get('fecha_inicio')
+    fecha_fin = request.args.get('fecha_fin')
+    
+    if not fecha_inicio:
+        fecha_inicio = datetime.now().replace(day=1).strftime('%Y-%m-%d')
+    if not fecha_fin:
+        fecha_fin = datetime.now().strftime('%Y-%m-%d')
+
+    fecha_inicio = datetime.strptime(fecha_inicio, '%Y-%m-%d')
+    fecha_fin = datetime.strptime(fecha_fin, '%Y-%m-%d')
+
+    terceros_filtrados = database.obtener_tercero_entre_fechas(fecha_inicio, fecha_fin)
+    
+    if request.args.get('exportar') == 'True':
+        df = pd.DataFrame(terceros_filtrados)
+
+        # Crear el nombre del archivo con el formato deseado
+        nombre_archivo = f"{fecha_inicio.strftime('%Y-%m-%d')} - {fecha_fin.strftime('%Y-%m-%d')}.xlsx"
+
+        # Forzar la descarga del archivo de Excel desde memoria
+        excel_buffer = BytesIO()
+        df.to_excel(excel_buffer, index=False)
+        excel_buffer.seek(0)
+        return send_file(excel_buffer, as_attachment=True, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', download_name=nombre_archivo)
+
+
+    return render_template('terceros.html', terceros=terceros_filtrados, fecha_inicio=fecha_inicio.strftime('%Y-%m-%d'), fecha_fin=fecha_fin.strftime('%Y-%m-%d'))
+
+@app.route('/crear_tercero', methods=['GET', 'POST'])
+def crear_tercero():
+    if request.method == 'POST':
+        identificacion = request.form['identificacion']
+        nombre = request.form['nombre']
+        area = request.form['area']
+        fecha = request.form['fecha']
+        hora_escaneo = request.form['hora_escaneo']
+        hora_entrada = request.form['hora_entrada']
+        hora_salida = request.form['hora_salida']
+        rango = request.form['rango']
+        if database.crear_tercero(identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango):
+            # Redirige a una página exitosa si la creación del tercero fue exitosa
+            return redirect(url_for('mostrar_terceros'))
+        else:
+            # Redirige a una página de error si la creación del tercero falló
+            return redirect(url_for('crear_tercero'))
+    else:
+        # Obtener la lista de usuarios desde la base de datos
+        usuarios = database.obtener_usuarios()
+        # Renderizar la vista HTML para crear un nuevo tercer0, pasando la lista de usuarios al template
+        return render_template('crear_tercero.html', usuarios=usuarios)
+
+
+@app.route('/editar_tercero/<int:id_tercero>', methods=['GET', 'POST'])
+def editar_tercero(id_tercero):
+    if request.method == 'POST':
+        # Obtener los datos del formulario de edición
+        identificacion = request.form['identificacion']
+        nombre = request.form['nombre']
+        area = request.form['area']
+        fecha = request.form['fecha']
+        hora_escaneo = request.form['hora_escaneo']
+        hora_entrada = request.form['hora_entrada']
+        hora_salida = request.form['hora_salida']
+        rango = request.form['rango']
+
+        # Llamar a la función para editar el tercero en la base de datos
+        database.editar_tercero(id_tercero, identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango)
+
+        # Redireccionar a la página de lista de tercero después de la edición
+        return redirect(url_for('mostrar_terceros'))
+    else:
+        # Obtener el tercero a editar de la base de datos
+        tercero = database.obtener_tercero_por_id(id_tercero)
+        usuarios = database.obtener_usuarios()
+        return render_template('editar_tercero.html', tercero=tercero, usuarios=usuarios)
+
+@app.route('/borrar_tercero/<int:id_tercero>', methods=['GET', 'POST'])
+def borrar_tercero_route(id_tercero):
+    if request.method == 'POST':
+        database.borrar_tercero(id_tercero)
+        return redirect(url_for('mostrar_tercero'))
+    else:
+        return "Método no permitido", 405
+    
 
 
 if __name__ == '__main__':

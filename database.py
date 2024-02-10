@@ -188,3 +188,85 @@ def borrar_registro(id_registro):
     sql = "DELETE FROM registros WHERE id = %s"
     cursor.execute(sql, (id_registro,))
     mydb.commit()
+
+
+
+
+
+
+def obtener_tercero():
+    try:
+        cursor = mydb.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM tercero")
+        tercero = cursor.fetchall()
+        return tercero
+    except mysql.connector.Error as error:
+        print("Error al obtener usuarios de la base de datos:", error)
+        return []
+    finally:
+        if 'cursor' in locals():
+            cursor.close()
+            
+def obtener_tercero_entre_fechas(fecha_inicio, fecha_fin):
+    try:
+        cursor = mydb.cursor(dictionary=True)
+        sql = "SELECT * FROM tercero WHERE fecha BETWEEN %s AND %s"
+        cursor.execute(sql, (fecha_inicio, fecha_fin))
+        tercero = cursor.fetchall()
+        return tercero
+    except mysql.connector.Error as error:
+        print("Error al obtener tercero de la base de datos:", error)
+        return []
+    finally:
+        if 'cursor' in locals():
+            cursor.close()
+            
+def editar_tercero(id_tercero, identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango):
+    try:
+        cursor = mydb.cursor()
+        sql = "UPDATE tercero SET identificacion = %s, nombre = %s, area = %s, fecha = %s, hora_escaneo = %s, hora_entrada = %s, hora_salida = %s, rango = %s WHERE id = %s"
+        val = (identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango, id_tercero)
+        cursor.execute(sql, val)
+        mydb.commit()
+        print("Tercero editado correctamente.")
+    except mysql.connector.Error as error:
+        print("Error al editar tercero en la base de datos:", error)
+    finally:
+        if 'cursor' in locals():
+            cursor.close()
+            
+def obtener_tercero_por_id(id_tercero):
+    try:
+        cursor = mydb.cursor(dictionary=True)
+        sql = "SELECT * FROM tercero WHERE id = %s"
+        cursor.execute(sql, (id_tercero,))
+        tercero = cursor.fetchone()
+        return tercero
+    except mysql.connector.Error as error:
+        print("Error al obtener tercero de la base de datos:", error)
+        return None
+    finally:
+        if 'cursor' in locals():
+            cursor.close()
+
+
+def crear_tercero(identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango):
+    try:
+        cursor = mydb.cursor()
+        sql = "INSERT INTO tercero (identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+        val = (identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango)
+        cursor.execute(sql, val)
+        mydb.commit()
+        cursor.close()
+        print("tercero creado exitosamente.")
+        return True
+    except mysql.connector.Error as error:
+        print("Error al crear tercero en la base de datos:", error)
+        return False
+
+
+def borrar_tercero(id_tercero):
+    cursor = mydb.cursor()
+    sql = "DELETE FROM tercero WHERE id = %s"
+    cursor.execute(sql, (id_tercero,))
+    mydb.commit()
