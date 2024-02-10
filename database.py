@@ -125,11 +125,11 @@ def obtener_registros():
         if 'cursor' in locals():
             cursor.close()
             
-def obtener_registros_por_fecha(fecha):
+def obtener_registros_entre_fechas(fecha_inicio, fecha_fin):
     try:
         cursor = mydb.cursor(dictionary=True)
-        sql = "SELECT * FROM registros WHERE fecha = %s"
-        cursor.execute(sql, (fecha,))
+        sql = "SELECT * FROM registros WHERE fecha BETWEEN %s AND %s"
+        cursor.execute(sql, (fecha_inicio, fecha_fin))
         registros = cursor.fetchall()
         return registros
     except mysql.connector.Error as error:

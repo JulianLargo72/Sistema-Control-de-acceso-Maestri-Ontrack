@@ -77,7 +77,7 @@ def obtener_hora_entrada_desde_db(identificacion):
 
 
 def generate_frames():
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(1)
     while True:
         ret, frame = cap.read()
         

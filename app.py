@@ -4,18 +4,19 @@ from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 from email.mime.application import MIMEApplication
 import os
-from flask import Flask, render_template, url_for, flash, request, redirect, Response
+from flask import Flask, render_template, url_for, flash, request, redirect, Response, send_file
 import cv2
 from pyzbar.pyzbar import decode
 import numpy as np
-from datetime import datetime
+from datetime import datetime, timedelta
 import openpyxl as xl
 import time
 import pyqrcode
 from camera import generate_frames
 from qr import generar_qr, enviar_correo
-from excel import enviar_correo_excel
 import database
+import pandas as pd
+
 
 app = Flask(__name__)
 app.secret_key = 'maestri'
@@ -110,14 +111,31 @@ def mostrar_registros_bd():
 
 @app.route('/filtrar_registros', methods=['GET'])
 def filtrar_registros():
-    fecha_filtro = request.args.get('fecha_filtro')
+    fecha_inicio = request.args.get('fecha_inicio')
+    fecha_fin = request.args.get('fecha_fin')
     
-    # Si no se proporciona fecha_filtro, utilizar la fecha de hoy
-    if not fecha_filtro:
-        fecha_filtro = datetime.now().strftime('%Y-%m-%d')
+    # Si no se proporciona fecha_inicio o fecha_fin, utilizar las fechas de inicio y fin de un rango de fechas razonable
+    if not fecha_inicio:
+        fecha_inicio = datetime.now().replace(day=1).strftime('%Y-%m-%d')
+    if not fecha_fin:
+        fecha_fin = datetime.now().strftime('%Y-%m-%d')
 
-    registros_filtrados = database.obtener_registros_por_fecha(fecha_filtro)
-    return render_template('registros_bd.html', registros=registros_filtrados, fecha_filtro=fecha_filtro)
+    # Convertir las fechas de string a datetime
+    fecha_inicio = datetime.strptime(fecha_inicio, '%Y-%m-%d')
+    fecha_fin = datetime.strptime(fecha_fin, '%Y-%m-%d')
+
+    registros_filtrados = database.obtener_registros_entre_fechas(fecha_inicio, fecha_fin)
+    
+    if request.args.get('exportar') == 'True':
+        # Crear un DataFrame de pandas con los registros filtrados
+        df = pd.DataFrame(registros_filtrados)
+        
+        # Escribir el DataFrame en un archivo Excel
+        df.to_excel('registros_filtrados.xlsx', index=False)
+        
+        return redirect(url_for('mostrar_registros_bd'))
+    
+    return render_template('registros_bd.html', registros=registros_filtrados, fecha_inicio=fecha_inicio.strftime('%Y-%m-%d'), fecha_fin=fecha_fin.strftime('%Y-%m-%d'))
 
 @app.route('/crear_registro', methods=['GET', 'POST'])
 def crear_registro():
@@ -177,4 +195,4 @@ def borrar_registro_route(id_registro):
 
 
 if __name__ == '__main__':
-    app.run(host='192.168.1.53', port=5000, debug=True)
+    app.run(host='192.168.0.44', port=5000, debug=True)
