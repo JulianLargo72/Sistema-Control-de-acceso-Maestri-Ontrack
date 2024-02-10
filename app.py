@@ -16,6 +16,7 @@ from camera import generate_frames
 from qr import generar_qr, enviar_correo
 import database
 import pandas as pd
+from io import BytesIO
 
 
 app = Flask(__name__)
@@ -114,27 +115,29 @@ def filtrar_registros():
     fecha_inicio = request.args.get('fecha_inicio')
     fecha_fin = request.args.get('fecha_fin')
     
-    # Si no se proporciona fecha_inicio o fecha_fin, utilizar las fechas de inicio y fin de un rango de fechas razonable
     if not fecha_inicio:
         fecha_inicio = datetime.now().replace(day=1).strftime('%Y-%m-%d')
     if not fecha_fin:
         fecha_fin = datetime.now().strftime('%Y-%m-%d')
 
-    # Convertir las fechas de string a datetime
     fecha_inicio = datetime.strptime(fecha_inicio, '%Y-%m-%d')
     fecha_fin = datetime.strptime(fecha_fin, '%Y-%m-%d')
 
     registros_filtrados = database.obtener_registros_entre_fechas(fecha_inicio, fecha_fin)
     
     if request.args.get('exportar') == 'True':
-        # Crear un DataFrame de pandas con los registros filtrados
         df = pd.DataFrame(registros_filtrados)
-        
-        # Escribir el DataFrame en un archivo Excel
-        df.to_excel('registros_filtrados.xlsx', index=False)
-        
-        return redirect(url_for('mostrar_registros_bd'))
-    
+
+        # Crear el nombre del archivo con el formato deseado
+        nombre_archivo = f"{fecha_inicio.strftime('%Y-%m-%d')} - {fecha_fin.strftime('%Y-%m-%d')}.xlsx"
+
+        # Forzar la descarga del archivo de Excel desde memoria
+        excel_buffer = BytesIO()
+        df.to_excel(excel_buffer, index=False)
+        excel_buffer.seek(0)
+        return send_file(excel_buffer, as_attachment=True, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', download_name=nombre_archivo)
+
+
     return render_template('registros_bd.html', registros=registros_filtrados, fecha_inicio=fecha_inicio.strftime('%Y-%m-%d'), fecha_fin=fecha_fin.strftime('%Y-%m-%d'))
 
 @app.route('/crear_registro', methods=['GET', 'POST'])
