@@ -8,49 +8,71 @@
     <link rel="shortcut icon" href="/static/imagenes/favicon.ico" />
 </head>
 <body>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  {% with messages = get_flashed_messages() %}
+  {% if messages %}
+      <script>
+          {% for message in messages %}
+              Swal.fire({
+                title: "¡Éxito!",
+                text: "{{ message }}",
+                icon: "success"
+              });
+          {% endfor %}
+      </script>
+  {% endif %}
+  {% endwith %}
 {% include 'navbar.html' %}
 <br>
-  <div class="card container mt-4">
-    <div class="card-body">
-        <h1 class="card-title text-center mb-4">Generador de Códigos QR</h1>
-        <form method="post" action="{{ url_for('generar') }}" class="mx-auto">
-            <!-- Alinear el formulario al centro -->
-            <div class="mb-3">
-                <label for="prefijo" class="form-label">Área:</label>
-                <select class="form-select" name="prefijo" required>
-                    <option value="" disabled selected>Seleccione una opción</option>
-                    <option value="A">Administrativa</option>
-                    <option value="G">Gerencial</option>
-                    <option value="C">Comercial</option>
-                    <option value="O">Operaciones</option>
-                    <option value="T">Tercero</option>
-                </select>
-            </div>
-            <div class="mb-3">
-                <label for="identificacion" class="form-label">Identificación:</label>
-                <input type="number" class="form-control" name="identificacion" required />
-            </div>
-            <div class="mb-3">
-                <label for="nombre" class="form-label">Nombre:</label>
-                <input type="text" class="form-control" name="nombre" required />
-            </div>
-            <div class="mb-3">
-                <label for="correo" class="form-label">Correo Electrónico:</label>
-                <input type="email" class="form-control" placeholder="Campo Opcional" name="correo" />
-            </div>
-            <button type="submit" class="btn btn-success mx-auto">Generar QR</button>
-        </form>
+<div class="card container mt-4">
+  <div class="card-body">
+      <h1 class="card-title text-center mb-4">Generador de Códigos QR</h1>
+      <form method="post" action="{{ url_for('generar') }}" class="mx-auto">
+          <div class="row">
+              <!-- Columna 1 -->
+              <div class="col-md-6">
+                  <div class="mb-3">
+                      <label for="prefijo" class="form-label">Área:</label>
+                      <select class="form-select" name="prefijo" required>
+                          <option value="" disabled selected>Seleccione una opción</option>
+                          <option value="A">Administrativa</option>
+                          <option value="G">Gerencial</option>
+                          <option value="C">Comercial</option>
+                          <option value="O">Operaciones</option>
+                          <option value="T">Tercero</option>
+                      </select>
+                  </div>
+                  <div class="mb-3">
+                      <label for="identificacion" class="form-label">Identificación:</label>
+                      <input type="number" class="form-control" name="identificacion" required />
+                  </div>
+              </div>
+              <!-- Columna 2 -->
+              <div class="col-md-6">
+                  <div class="mb-3">
+                      <label for="nombre" class="form-label">Nombre:</label>
+                      <input type="text" class="form-control" name="nombre" required />
+                  </div>
+                  <div class="mb-3">
+                      <label for="correo" class="form-label">Correo Electrónico:</label>
+                      <input type="email" class="form-control" name="correo" />
+                  </div>
+              </div>
+          </div>
+          <button type="submit" class="btn btn-success mx-auto">Generar QR</button>
+      </form>
 
-        {% if mensaje %}
-            <div class="alert alert-success mt-3 text-center" role="alert">
-                {{ mensaje }}
-            </div>
-        {% endif %} 
-        {% if qr_path %}
-            <img src="{{ qr_path }}" alt="Código QR" class="img-fluid mt-3 mx-auto" />
-        {% endif %}
-    </div>
+      {% if mensaje %}
+          <div class="alert alert-success mt-3 text-center" role="alert">
+              {{ mensaje }}
+          </div>
+      {% endif %} 
+      {% if qr_path %}
+          <img src="{{ qr_path }}" alt="Código QR" class="img-fluid mt-3 mx-auto" />
+      {% endif %}
+  </div>
 </div>
+
 
       <br><br><br>
       <footer class="bg-light p-3 text-center">

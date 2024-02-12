@@ -69,6 +69,7 @@ def generar():
 
             if destinatario:
                 mensaje += f" Se ha enviado al correo: {destinatario}."
+                flash('QR generado correctamente', 'success')
             return render_template('generar.html', mensaje=mensaje, qr_path=qr_path)
         except ValueError as e:
             mensaje = str(e)
@@ -154,17 +155,14 @@ def crear_registro():
         hora_salida = request.form['hora_salida']
         rango = request.form['rango']
         if database.crear_registro(identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango):
-            # Redirige a una página exitosa si la creación del registro fue exitosa
+            flash('Registro creado correctamente', 'success')  # Mensaje de éxito
             return redirect(url_for('mostrar_registros_bd'))
         else:
-            # Redirige a una página de error si la creación del registro falló
+            flash('Error al crear el registro', 'error')  # Mensaje de error
             return redirect(url_for('crear_registro'))
     else:
-        # Obtener la lista de usuarios desde la base de datos
         usuarios = database.obtener_usuarios()
-        # Renderizar la vista HTML para crear un nuevo registro, pasando la lista de usuarios al template
-        return render_template('crear_registro.html', usuarios=usuarios)
-
+        return render_template('crear_registro.html', usuarios=usuarios)       
 
 @app.route('/editar_registro/<int:id_registro>', methods=['GET', 'POST'])
 def editar_registro(id_registro):
@@ -181,6 +179,7 @@ def editar_registro(id_registro):
 
         # Llamar a la función para editar el registro en la base de datos
         database.editar_registro(id_registro, identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango)
+        flash('Registro editado correctamente', 'success')  # Mensaje de éxito
 
         # Redireccionar a la página de lista de registros después de la edición
         return redirect(url_for('mostrar_registros_bd'))
@@ -194,6 +193,7 @@ def editar_registro(id_registro):
 def borrar_registro_route(id_registro):
     if request.method == 'POST':
         database.borrar_registro(id_registro)
+        flash('Registro eliminado correctamente', 'success')
         return redirect(url_for('mostrar_registros_bd'))
     else:
         return "Método no permitido", 405
@@ -249,10 +249,10 @@ def crear_tercero():
         hora_salida = request.form['hora_salida']
         rango = request.form['rango']
         if database.crear_tercero(identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango):
-            # Redirige a una página exitosa si la creación del tercero fue exitosa
+            flash('Registro eliminado correctamente', 'success')
             return redirect(url_for('mostrar_terceros'))
         else:
-            # Redirige a una página de error si la creación del tercero falló
+            flash('Error al crear el registro', 'error')
             return redirect(url_for('crear_tercero'))
     else:
         # Obtener la lista de usuarios desde la base de datos
@@ -276,8 +276,7 @@ def editar_tercero(id_tercero):
 
         # Llamar a la función para editar el tercero en la base de datos
         database.editar_tercero(id_tercero, identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango)
-
-        # Redireccionar a la página de lista de tercero después de la edición
+        flash('Registro editado correctamente', 'success')
         return redirect(url_for('mostrar_terceros'))
     else:
         # Obtener el tercero a editar de la base de datos
@@ -289,6 +288,7 @@ def editar_tercero(id_tercero):
 def borrar_tercero_route(id_tercero):
     if request.method == 'POST':
         database.borrar_tercero(id_tercero)
+        flash('Registro eliminado correctamente', 'success')
         return redirect(url_for('mostrar_terceros'))
     else:
         return "Método no permitido", 405

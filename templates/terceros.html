@@ -9,6 +9,20 @@
     <link rel="shortcut icon" href="/static/imagenes/favi.ico" />
   </head>
   <body>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <script>
+            {% for message in messages %}
+                Swal.fire({
+                  title: "¡Éxito!",
+                  text: "{{ message }}",
+                  icon: "success"
+                });
+            {% endfor %}
+        </script>
+    {% endif %}
+    {% endwith %}
     {% include 'navbar.html' %}
     <br>
     <div class="container mt-4">
@@ -26,11 +40,11 @@
               </div>
               <br>
               <button type="submit" class="btn btn-success btn-lg">Filtrar</button>
-              <button type="submit" class="btn btn-primary btn-lg" name="exportar" value="True">Exportar</button>
+              <button type="submit" class="btn btn-secondary btn-lg" name="exportar" value="True">Exportar</button>
             </form>
             <br>
-            <a href="/crear_tercero" class="btn btn-primary btn-lg">Crear tercero</a>
-            <br><br>
+            <a href="/crear_tercero" class="btn btn-primary btn-lg float-end">Crear tercero</a>
+            <br><br><br>
             <div class="table-responsive">
               <table class="table table-success table-striped text-center table-hover table-sm" id="terceros">
                 <thead>
