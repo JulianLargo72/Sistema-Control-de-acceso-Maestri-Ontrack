@@ -76,6 +76,11 @@ def obtener_hora_entrada_desde_db(identificacion):
     else:
         # Si no hay resultados para el día actual, retornar la hora actual
         return datetime.now().strftime('%H:%M:%S')
+    
+def codigo_existe_en_usuarios(codigo):
+    query = f"SELECT COUNT(*) FROM usuarios WHERE identificacion = '{codigo}'"
+    resultado = database.ejecutar_consulta_sql(query)
+    return resultado[0][0] > 0
 
 
 
@@ -120,33 +125,47 @@ def generate_frames():
                 if 6 >= diasem >= 0:
                     cv2.polylines(frame, [pts], True, (255, 255, 0), 5)
 
-                    if codigo not in mañana or (codigo in mañana and time.time() - tiempo_ultima_registro.get(codigo, 0) > 60):
-                        mañana.append(codigo)
-                        tiempo_ultima_registro[codigo] = time.time()
+                    # Obtener el área correspondiente al primer carácter del código
+                    area = obtener_area(codigo)
 
-                        # Obtener el área correspondiente al primer carácter del código
-                        area = obtener_area(codigo)
+                    codigo_despues_del_primer_digito = info.split('-')[0][2:].strip()
 
-                        codigo_despues_del_primer_digito = info.split('-')[0][2:].strip()
+                    # Verificar si el código existe en la base de datos de usuarios
+                    if not codigo_existe_en_usuarios(codigo_despues_del_primer_digito):
+                        # Si no existe, mostrar mensaje de error y continuar con el siguiente código
+                        cv2.putText(frame, f"Usuario no registrado", (xi - 65, yi - 45), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+                        cv2.putText(frame, "Registro Fallido", (xi - 65, yi - 15), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+                        continue
 
-                        # Buscar la hora de entrada en la base de datos
-                        hora_entrada = obtener_hora_entrada_desde_db(codigo_despues_del_primer_digito)
-
-                        # Guardar el registro en la base de datos
-                        database.guardar_registro_en_mysql(codigo_despues_del_primer_digito, nombre, area, fecha, texth, hora_entrada, time.strftime("%H:%M:%S"), obtener_rango(hora_actual.strftime('%H:%M:%S')))
-
-                        # Si el área es 'Tercero', guardar el registro también en la tabla de tercero
-                        if area == 'Tercero':
-                            database.guardar_registro_tercero_en_mysql(codigo_despues_del_primer_digito, nombre, area, fecha, texth, hora_entrada, time.strftime("%H:%M:%S"), obtener_rango(hora_actual.strftime('%H:%M:%S')))
-
-
-                        cv2.putText(frame, f"{letr}0{num}", (xi - 15, yi - 15), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 55, 0), 2)
-                        print("El usuario es accionista de la empresa \nNúmero de Identificación:", codigo, "Fecha de registro:", fecha, "Hora de registro:", texth)
-
-                    elif codigo in mañana:
+                    # Si el código está en la lista "mañana" y el tiempo desde el último registro es menor o igual a 60 segundos,
+                    # muestra un mensaje de éxito y continúa con el siguiente código.
+                    if codigo in mañana and time.time() - tiempo_ultima_registro.get(codigo, 0) <= 60:
                         cv2.putText(frame, f"El ID {codigo}", (xi - 65, yi - 45), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
                         cv2.putText(frame, "Registro Exitoso", (xi - 65, yi - 15), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
                         print(mañana)
+                        continue
+
+                    # Si llega a este punto, es un nuevo registro válido, entonces lo agregamos a "mañana" y actualizamos el tiempo del último registro.
+                    mañana.append(codigo)
+                    tiempo_ultima_registro[codigo] = time.time()
+
+                    # Buscar la hora de entrada en la base de datos
+                    hora_entrada = obtener_hora_entrada_desde_db(codigo_despues_del_primer_digito)
+
+                    # Guardar el registro en la base de datos
+                    database.guardar_registro_en_mysql(codigo_despues_del_primer_digito, nombre, area, fecha, texth, hora_entrada, time.strftime("%H:%M:%S"), obtener_rango(hora_actual.strftime('%H:%M:%S')))
+
+                    # Si el área es 'Tercero', guardar el registro también en la tabla de tercero
+                    if area == 'Tercero':
+                        database.guardar_registro_tercero_en_mysql(codigo_despues_del_primer_digito, nombre, area, fecha, texth, hora_entrada, time.strftime("%H:%M:%S"), obtener_rango(hora_actual.strftime('%H:%M:%S')))
+
+                    cv2.putText(frame, f"{letr}0{num}", (xi - 15, yi - 15), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 55, 0), 2)
+                    print("El usuario es accionista de la empresa \nNúmero de Identificación:", codigo, "Fecha de registro:", fecha, "Hora de registro:", texth)
+
+                elif codigo in mañana:
+                    cv2.putText(frame, f"El ID {codigo}", (xi - 65, yi - 45), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+                    cv2.putText(frame, "Registro Exitoso", (xi - 65, yi - 15), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+                    print(mañana)
 
         ret, jpeg = cv2.imencode('.jpg', frame)
         frame_bytes = jpeg.tobytes()
