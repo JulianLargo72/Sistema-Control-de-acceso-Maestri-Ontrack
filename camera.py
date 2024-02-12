@@ -60,8 +60,11 @@ def obtener_rango(hora_actual):
         return 'Revisar'
 
 def obtener_hora_entrada_desde_db(identificacion):
-    # Realizar una consulta SQL para obtener el primer registro de la identificación dada
-    query = f"SELECT hora_entrada FROM registros WHERE identificacion = '{identificacion}' ORDER BY id ASC LIMIT 1"
+    # Obtener la fecha actual
+    fecha_actual = datetime.now().strftime('%Y-%m-%d')
+
+    # Realizar una consulta SQL para obtener el primer registro de la identificación dada para el día actual
+    query = f"SELECT hora_entrada FROM registros WHERE identificacion = '{identificacion}' AND fecha = '{fecha_actual}' ORDER BY id ASC LIMIT 1"
     
     # Ejecutar la consulta y obtener los resultados
     resultados = database.ejecutar_consulta_sql(query)
@@ -71,7 +74,7 @@ def obtener_hora_entrada_desde_db(identificacion):
         hora_entrada = resultados[0][0]
         return hora_entrada
     else:
-        # Si no hay resultados, retornar la hora actual
+        # Si no hay resultados para el día actual, retornar la hora actual
         return datetime.now().strftime('%H:%M:%S')
 
 
