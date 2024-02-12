@@ -152,11 +152,11 @@ def generate_frames():
                     # Buscar la hora de entrada en la base de datos
                     hora_entrada = obtener_hora_entrada_desde_db(codigo_despues_del_primer_digito)
 
-                    # Guardar el registro en la base de datos
-                    database.guardar_registro_en_mysql(codigo_despues_del_primer_digito, nombre, area, fecha, texth, hora_entrada, time.strftime("%H:%M:%S"), obtener_rango(hora_actual.strftime('%H:%M:%S')))
-
-                    # Si el área es 'Tercero', guardar el registro también en la tabla de tercero
-                    if area == 'Tercero':
+                    if area != 'Tercero':
+                        # Guardar el registro en la base de datos MySQL
+                        database.guardar_registro_en_mysql(codigo_despues_del_primer_digito, nombre, area, fecha, texth, hora_entrada, time.strftime("%H:%M:%S"), obtener_rango(hora_actual.strftime('%H:%M:%S')))
+                    else:
+                        # Guardar el registro en la tabla de terceros en la base de datos MySQL
                         database.guardar_registro_tercero_en_mysql(codigo_despues_del_primer_digito, nombre, area, fecha, texth, hora_entrada, time.strftime("%H:%M:%S"), obtener_rango(hora_actual.strftime('%H:%M:%S')))
 
                     cv2.putText(frame, f"{letr}0{num}", (xi - 15, yi - 15), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 55, 0), 2)
