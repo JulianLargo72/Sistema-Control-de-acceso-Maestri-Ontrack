@@ -56,7 +56,7 @@ def generar():
             # Verificar si el prefijo está en el diccionario de áreas
             area = areas.get(prefijo)
             if area:
-                mensaje = f"QR generado para la identificación: {identificacion}, nombre: {nombre} y con un vinculo con la empresa de: {area}."
+                mensaje = f"QR generado para la identificación: {identificacion}, nombre: {nombre} y pertenece al area de: {area}."
             else:
                 mensaje = f"QR generado para la identificación: {identificacion} y el nombre: {nombre}."
                 
@@ -65,7 +65,7 @@ def generar():
             
             # Enviar el correo electrónico solo si se proporciona el correo
             if destinatario:
-                enviar_correo(destinatario, "Codigo QR control de acceso Maestri Ontrack", f" Cordial saludo:\n\nTe informamos que el QR generado con la siguiente informacion ha sido registrado con exito!\n\nNombre: {nombre}\nVinculo: {area}\n Identificación: {identificacion}\n\nA continuacion adjuntamos el codigo", qr_path)
+                enviar_correo(destinatario, "Codigo QR control de acceso Maestri Ontrack", f" Cordial saludo:\n\nTe informamos que el QR generado con la siguiente informacion ha sido registrado con exito!\n\nNombre: {nombre}\nArea: {area}\nIdentificación: {identificacion}\n\nA continuacion adjuntamos el codigo", qr_path)
 
             if destinatario:
                 mensaje += f" Se ha enviado al correo: {destinatario}."
@@ -75,6 +75,113 @@ def generar():
             mensaje = str(e)
             return render_template('generar.html', mensaje=mensaje)
     return render_template('generar.html')
+
+@app.route('/generar_externo', methods=['GET', 'POST'])
+def generar_externo():
+    if request.method == 'POST':
+        try:
+            prefijo = request.form['prefijo']
+            if not prefijo.isalpha():
+                raise ValueError("El prefijo debe contener solo letras.")
+            
+            identificacion = int(request.form['identificacion'])
+            nombre = request.form['nombre']
+            
+            destinatario = request.form.get('correo', '')
+            compañia = request.form['compañia']
+            motivo = request.form['motivo']
+            dependencia = request.form['dependencia']
+            recibe = request.form['recibe']
+            arl = request.form['arl']
+            equipo = request.form['equipo']
+            qr_path, info_completa = generar_qr(prefijo, identificacion, nombre)
+            
+            # Verificar si el prefijo está en el diccionario de áreas
+            area = areas.get(prefijo)
+            
+            mensaje = f"QR generado para la identificación: {identificacion}, nombre: {nombre}, con un vinculo de: {area}."
+                
+            # Insertar datos en la tabla usuarios
+            database.insertar_externo(identificacion, nombre, area, destinatario, compañia, motivo, dependencia, recibe, arl, equipo, qr_path)
+            
+            # Enviar el correo electrónico solo si se proporciona el correo
+            if destinatario:
+                enviar_correo(destinatario, "Codigo QR control de acceso Maestri Ontrack", f" Cordial saludo:\n\nTe informamos que el QR generado con la siguiente informacion ha sido registrado con exito!\n\nNombre: {nombre}\nVinculo: {area}\nIdentificación: {identificacion}\nCompañia que representa: {compañia}\nMotivo de la visita: {motivo}\nDependencia visitada:{dependencia}\nPersona que lo recibe: {recibe}\nArl: {arl}\nEquipo: {equipo}\n\nA continuacion adjuntamos el codigo", qr_path)
+
+            if destinatario:
+                flash('QR generado correctamente', 'success')
+            return render_template('generar_externo.html', mensaje= mensaje, qr_path=qr_path)
+        except ValueError as e:
+            return render_template('generar_externo.html')
+    usuarios = database.obtener_usuarios()
+    return render_template('generar_externo.html', usuarios=usuarios)
+
+
+@app.route('/externos')
+def mostrar_externos():
+    externos = database.obtener_externos()
+    return render_template('externos.html', externos=externos)
+
+@app.route('/editar_externo/<int:id_externo>', methods=['GET', 'POST'])
+def editar_externo(id_externo):
+    if request.method == 'POST':
+        try:
+            identificacion = int(request.form['identificacion'])
+            nombre = request.form['nombre']
+            correo = request.form['correo']
+            compañia = request.form['compañia']
+            motivo = request.form['motivo']
+            dependencia = request.form['dependencia']
+            recibe = request.form['recibe']
+            arl = request.form['arl']
+            equipo = request.form['equipo']
+            
+            # Verificar si el prefijo está en el diccionario de áreas
+            prefijo = request.form['prefijo']
+            area = areas.get(prefijo)
+
+            # Llamar a la función para editar el registro en la base de datos
+            database.editar_externo(id_externo, identificacion, nombre, area, correo, compañia, motivo, dependencia, recibe, arl, equipo)
+            flash('Registro editado correctamente', 'success')  # Mensaje de éxito
+
+            # Redireccionar a la página de lista de registros después de la edición
+            return redirect(url_for('mostrar_externos'))
+        except ValueError:
+            flash('Error al editar el registro. Asegúrate de que los datos sean válidos.', 'error')
+            return redirect(url_for('mostrar_externos'))
+    else:
+        # Obtener el registro a editar de la base de datos
+        externo = database.obtener_externo_por_id(id_externo)
+        usuarios = database.obtener_usuarios()
+        return render_template('editar_externo.html', usuarios=usuarios, externo=externo)
+
+
+@app.route('/ver_externo/<int:id_externo>')
+def ver_externo(id_externo):
+    externo = database.obtener_externo_por_id(id_externo)
+    if externo:
+        return render_template('detalles_externo.html', externo=externo)
+    else:
+        return "Usuario no encontrado"
+    
+@app.route('/eliminar_externo/<int:id_externo>')
+def eliminar_externo(id_externo):
+    # Obtener el usuario por su ID
+    externo = database.obtener_externo_por_id(id_externo)
+
+    if externo:
+        # Llamar a la función para borrar el usuario y la imagen QR
+        database.borrar_externo(id_externo, externo['qr_path'])
+        # Redirigir a la página de lista de usuarios
+        return redirect(url_for('mostrar_externos'))
+    else:
+        return "Usuario no encontrado"
+    
+    
+    
+    
+    
+    
 
 @app.route('/video_feed')
 def video_feed():

@@ -48,19 +48,85 @@ def guardar_registro_en_mysql(identificacion, nombre, area, fecha, hora_escaneo,
     
 def guardar_registro_tercero_en_mysql(identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango):
     cursor = mydb.cursor()
-    sql = "INSERT INTO tercero (identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-    val = (identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango)
+
+    # Consultar los datos del externo basados en la identificación
+    sql_externo_info = "SELECT compañia, motivo, dependencia, recibe, arl, equipo FROM externos WHERE identificacion = %s"
+    cursor.execute(sql_externo_info, (identificacion,))
+    externo_info = cursor.fetchone()
+
+    # Si se encuentra información del externo, la guardamos en variables correspondientes
+    if externo_info:
+        compañia, motivo, dependencia, recibe, arl, equipo = externo_info
+    else:
+        # Si no se encuentra información del externo, establecemos valores predeterminados
+        compañia, motivo, dependencia, recibe, arl, equipo = "N/A", "N/A", "N/A", "N/A", "N/A", "N/A"
+
+    # Insertar el registro en la tabla de tercero con los campos obtenidos y los datos recibidos como parámetros
+    sql = "INSERT INTO tercero (identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango, compañia, motivo, dependencia, recibe, arl, equipo) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    val = (identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango, compañia, motivo, dependencia, recibe, arl, equipo)
+    cursor.execute(sql, val)
+    
+    mydb.commit()
+    cursor.close()
+
+    
+def insertar_externo(identificacion, nombre, area, correo, compañia, motivo, dependencia, recibe, arl, equipo, qr_path):
+    cursor = mydb.cursor()
+    sql = "INSERT INTO externos (identificacion, nombre, area, correo, compañia, motivo, dependencia, recibe, arl, equipo, qr_path) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    val = (identificacion, nombre, area, correo, compañia, motivo, dependencia, recibe, arl, equipo, qr_path)
     cursor.execute(sql, val)
     mydb.commit()
     cursor.close()
     
-def insertar_usuario(identificacion, nombre, area, correo, qr_path):
-    cursor = mydb.cursor()
-    sql = "INSERT INTO usuarios (identificacion, nombre, area, correo, qr_path) VALUES (%s, %s, %s, %s, %s)"
-    val = (identificacion, nombre, area, correo, qr_path)
-    cursor.execute(sql, val)
-    mydb.commit()
-    cursor.close()
+def obtener_externos():
+    try:
+        cursor = mydb.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM externos")
+        id_externo = cursor.fetchall()
+        return id_externo
+    except mysql.connector.Error as error:
+        print("Error al obtener usuarios de la base de datos:", error)
+        return []
+    finally:
+        if 'cursor' in locals():
+            cursor.close()
+            
+def obtener_externo_por_id(id_externo):
+    try:
+        cursor = mydb.cursor(dictionary=True)
+        sql = "SELECT * FROM externos WHERE id = %s"
+        cursor.execute(sql, (id_externo,))
+        tercero_u = cursor.fetchone()
+        return tercero_u
+    except mysql.connector.Error as error:
+        print("Error al obtener usuario de la base de datos:", error)
+        return None
+    finally:
+        if 'cursor' in locals():
+            cursor.close()
+            
+def borrar_externo(id_externo, qr_path):
+    try:
+        # Eliminar usuario de la base de datos
+        cursor = mydb.cursor()
+        sql = "DELETE FROM externos WHERE id = %s"
+        cursor.execute(sql, (id_externo,))
+        mydb.commit()
+        
+        # Eliminar imagen QR asociada
+        if qr_path:
+            # Construir la ruta completa del archivo QR
+            ruta_qr = os.path.join(os.getcwd(), qr_path)
+            # Verificar si el archivo existe y eliminarlo
+            if os.path.exists(ruta_qr):
+                os.remove(ruta_qr)
+        
+        print("Usuario y QR eliminados correctamente.")
+    except mysql.connector.Error as error:
+        print("Error al borrar usuario de la base de datos:", error)
+    finally:
+        if 'cursor' in locals():
+            cursor.close()
     
 def obtener_usuarios():
     try:
@@ -112,6 +178,20 @@ def borrar_usuario(id_usuario, qr_path):
         if 'cursor' in locals():
             cursor.close()
     
+def editar_externo(id_externo, identificacion, nombre, area, correo, compañia, motivo, dependencia, recibe, arl, equipo):
+    try:
+        cursor = mydb.cursor()
+        sql = "UPDATE externos SET identificacion = %s, nombre = %s, area = %s, correo = %s, compañia = %s, motivo = %s, dependencia = %s, recibe = %s, arl = %s, equipo = %s WHERE id = %s"
+        val = (identificacion, nombre, area, correo, compañia, motivo, dependencia, recibe, arl, equipo, id_externo)
+        cursor.execute(sql, val)
+        mydb.commit()
+        print("Registro editado correctamente.")
+    except mysql.connector.Error as error:
+        print("Error al editar registro en la base de datos:", error)
+    finally:
+        if 'cursor' in locals():
+            cursor.close()
+            
 def obtener_registros():
     try:
         cursor = mydb.cursor(dictionary=True)
@@ -139,6 +219,8 @@ def obtener_registros_entre_fechas(fecha_inicio, fecha_fin):
         if 'cursor' in locals():
             cursor.close()
             
+
+            
 def editar_registro(id_registro, identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango):
     try:
         cursor = mydb.cursor()
@@ -152,6 +234,7 @@ def editar_registro(id_registro, identificacion, nombre, area, fecha, hora_escan
     finally:
         if 'cursor' in locals():
             cursor.close()
+
             
 def obtener_registro_por_id(id_registro):
     try:

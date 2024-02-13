@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Detalles Tercero</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous"/>
+    <link rel="shortcut icon" href="/static/imagenes/favi.ico" />
+  </head>
+  <body>
+    {% include 'navbar.html' %}
+    <br>
+    <div class="container mt-4">
+        <div class="card">
+            <div class="card-body">
+                <h1 class="card-title">Detalles del Tercero</h1>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="identificacion" class="form-label">Identificación:</label>
+                            <input type="text" class="form-control" id="identificacion" value="{{ externo['identificacion'] }}" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="nombre" class="form-label">Nombre:</label>
+                            <input type="text" class="form-control" id="nombre" value="{{ externo['nombre'] }}" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="area" class="form-label">Área:</label>
+                            <input type="text" class="form-control" id="area" value="{{ externo['area'] }}" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="correo" class="form-label">Correo:</label>
+                            <input type="email" class="form-control" id="correo" value="{{ externo['correo'] }}" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="correo" class="form-label">Compañia que representa:</label>
+                            <input type="email" class="form-control" id="compañia" value="{{ externo['compañia'] }}" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="motivo" class="form-label">Motivo de la visita:</label>
+                            <input type="motivo" class="form-control" id="correo" value="{{ externo['motivo'] }}" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        
+                        <div class="mb-3">
+                            <label for="correo" class="form-label">Dependencia visitada:</label>
+                            <input type="email" class="form-control" id="correo" value="{{ externo['dependencia'] }}" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="correo" class="form-label">Persona que lo recibe:</label>
+                            <input type="email" class="form-control" id="recibe" value="{{ externo['recibe'] }}" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="correo" class="form-label">ARL:</label>
+                            <input type="email" class="form-control" id="arl" value="{{ externo['arl'] }}" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="correo" class="form-label">Ingresa equipos a la empresa:</label>
+                            <input type="email" class="form-control" id="equipo" value="{{ externo['equipo'] }}" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="qr_path" class="form-label">Codigo QR:</label>
+                            <br>
+                            <img src="/{{ externo['qr_path'] }}" class="img-fluid" alt="QR Code">
+                        </div>                        
+                    </div>
+                </div>
+                <a href="/externos" class="btn btn-primary">Volver</a>
+            </div>
+        </div>
+    </div>
+    <br>
+    <footer class="bg-light p-3 text-center">
+      <p class="mb-0">&copy; 2024 - Todos los derechos reservados | Maestri on Track S.A.S</p>
+    </footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js" integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js" integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V" crossorigin="anonymous"></script>
+  </body>
+</html>

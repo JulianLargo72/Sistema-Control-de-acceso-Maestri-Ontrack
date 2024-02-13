@@ -77,10 +77,15 @@ def obtener_hora_entrada_desde_db(identificacion):
         # Si no hay resultados para el día actual, retornar la hora actual
         return datetime.now().strftime('%H:%M:%S')
     
-def codigo_existe_en_usuarios(codigo):
-    query = f"SELECT COUNT(*) FROM usuarios WHERE identificacion = '{codigo}'"
-    resultado = database.ejecutar_consulta_sql(query)
-    return resultado[0][0] > 0
+def codigo_existe_en_tercero_o_usuario(codigo):
+    query_usuarios = f"SELECT COUNT(*) FROM usuarios WHERE identificacion = '{codigo}'"
+    query_externos = f"SELECT COUNT(*) FROM externos WHERE identificacion = '{codigo}'"
+
+    resultado_usuarios = database.ejecutar_consulta_sql(query_usuarios)
+    resultado_terceros = database.ejecutar_consulta_sql(query_externos)
+
+    return (resultado_usuarios[0][0] > 0) or (resultado_terceros[0][0] > 0)
+
 
 
 
@@ -131,7 +136,7 @@ def generate_frames():
                     codigo_despues_del_primer_digito = info.split('-')[0][2:].strip()
 
                     # Verificar si el código existe en la base de datos de usuarios
-                    if not codigo_existe_en_usuarios(codigo_despues_del_primer_digito):
+                    if not codigo_existe_en_tercero_o_usuario(codigo_despues_del_primer_digito):
                         # Si no existe, mostrar mensaje de error y continuar con el siguiente código
                         cv2.putText(frame, f"Usuario no registrado", (xi - 65, yi - 45), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
                         cv2.putText(frame, "Registro Fallido", (xi - 65, yi - 15), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
@@ -160,7 +165,7 @@ def generate_frames():
                         database.guardar_registro_tercero_en_mysql(codigo_despues_del_primer_digito, nombre, area, fecha, texth, hora_entrada, time.strftime("%H:%M:%S"), obtener_rango(hora_actual.strftime('%H:%M:%S')))
 
                     cv2.putText(frame, f"{letr}0{num}", (xi - 15, yi - 15), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 55, 0), 2)
-                    print("El usuario es accionista de la empresa \nNúmero de Identificación:", codigo, "Fecha de registro:", fecha, "Hora de registro:", texth)
+                    print("El usuario pertenece a la empresa \nNúmero de Identificación:", codigo, "Fecha de registro:", fecha, "Hora de registro:", texth)
 
                 elif codigo in mañana:
                     cv2.putText(frame, f"El ID {codigo}", (xi - 65, yi - 45), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
