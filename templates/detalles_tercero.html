@@ -15,43 +15,43 @@
     <div class="container mt-4">
         <div class="card">
           <div class="card-body">
-            <h1 class="card-title text-center">Detalle Tercero</h1>
+            <h1 class="card-title text-center">Detalle Registro Tercero</h1>
             <br>
             <div class="container">
               <div class="row">
                 <div class="col-md-6">
                   <div class="form-group">
-                    <label for="identificacion_usuario">Identificación:</label>
+                    <label class="form-label" for="identificacion_usuario">Identificación:</label>
                     <input type="text" id="identificacion" name="rango" value="{{ tercero.identificacion }}" class="form-control" readonly>
                   </div>
                   <br>
                   <div class="form-group">
-                    <label for="nombre_usuario">Nombre:</label>
+                    <label class="form-label" for="nombre_usuario">Nombre:</label>
                     <input type="text" id="nombre" name="rango" value="{{ tercero.nombre }}" class="form-control" readonly>
                   </div>
                   <br>
                   <div class="form-group">
-                    <label for="area">Vinculo:</label>
+                    <label class="form-label" for="area">Vinculo:</label>
                     <input type="text" id="area" name="area" value="{{ tercero.area }}" class="form-control" readonly>
                   </div>
                   <br>
                   <div class="form-group">
-                    <label for="fecha">Fecha:</label>
+                    <label class="form-label" for="fecha">Fecha:</label>
                     <input type="date" id="fecha" name="fecha" value="{{ tercero.fecha }}" class="form-control" readonly>
                   </div>
                   <br>
                   <div class="form-group">
-                    <label for="hora_escaneo">Hora Escaneo:</label>
+                    <label class="form-label" for="hora_escaneo">Hora Escaneo:</label>
                     <input type="time" id="hora_escaneo" name="hora_escaneo" value="{{ tercero.hora_escaneo }}" class="form-control" step="1" readonly>
                   </div>
                   <br>
                   <div class="form-group">
-                    <label for="hora_entrada">Hora Entrada:</label>
+                    <label class="form-label" for="hora_entrada">Hora Entrada:</label>
                     <input type="time" id="hora_entrada" name="hora_entrada" value="{{ tercero.hora_entrada }}" class="form-control" step="1" readonly>
                   </div>
                   <br>
                   <div class="form-group">
-                    <label for="hora_salida">Hora Salida:</label>
+                    <label class="form-label" for="hora_salida">Hora Salida:</label>
                     <input type="time" id="hora_salida" name="hora_salida" value="{{ tercero.hora_salida }}" class="form-control" step="1" readonly>
                   </div>
                   <br>
@@ -90,7 +90,7 @@
               </div>
             </div>
             <br>
-            <a href="/terceros" type="submit" class="btn btn-primary">Atras</a>
+            <a href="/terceros" type="submit" class="btn btn-primary btn-lg">Atras</a>
           </div>
         </div>
       </div>

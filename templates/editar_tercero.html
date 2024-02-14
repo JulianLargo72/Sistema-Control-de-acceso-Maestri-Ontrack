@@ -15,7 +15,7 @@
 <div class="container mt-4">
     <div class="card">
         <div class="card-body">
-            <h1 class="card-title text-center">Editar Tercero</h1>
+            <h1 class="card-title text-center">Editar Registro Tercero</h1>
             <br>
             <form method="post" action="/editar_tercero/{{ tercero.id }}">
                 <div class="row">
@@ -60,17 +60,17 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="compañia" class="form-label">Compañía:</label>
+                            <label for="compañia" class="form-label">Compañía que representa:</label>
                             <input type="text" id="compañia" name="compañia" value="{{ tercero.compañia }}" class="form-control" required>
                         </div>
                         <br>
                         <div class="form-group">
-                            <label for="motivo" class="form-label">Motivo:</label>
+                            <label for="motivo" class="form-label">Motivo de la visita:</label>
                             <input type="text" id="motivo" name="motivo" value="{{ tercero.motivo }}" class="form-control" required>
                         </div>
                         <br>
                         <div class="form-group">
-                            <label for="dependencia" class="form-label">Dependencia:</label>
+                            <label for="dependencia" class="form-label">Dependencia visitada:</label>
                             <select id="dependencia" name="dependencia" class="form-control" data-width="auto" required>
                                 <option value="Administrativa" {% if tercero.area == 'Administrativa' %} selected {% endif %}>Administrativa</option>
                                 <option value="Gerencial" {% if tercero.area == 'Gerencial' %} selected {% endif %}>Gerencial</option>
@@ -95,7 +95,7 @@
                         </div>
                         <br>
                         <div class="form-group">
-                            <label for="equipo" class="form-label">Equipo:</label>
+                            <label for="equipo" class="form-label">Ingresa Equipo:</label>
                             <select id="equipo" name="equipo" class="form-control" data-width="auto" required>
                                 <option value="Tablet" {% if tercero.equipo == 'Tablet' %} selected {% endif %}>Tablet</option>
                                 <option value="PC" {% if tercero.equipo == 'PC' %} selected {% endif %}>PC</option>
@@ -105,7 +105,7 @@
                     </div>
                 </div>
                 <br>    
-                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                <button type="submit" class="btn btn-primary btn-lg">Enviar</button>
             </form>
         </div>
     </div>

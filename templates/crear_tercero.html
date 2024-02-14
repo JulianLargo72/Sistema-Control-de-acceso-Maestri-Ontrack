@@ -17,7 +17,7 @@
       <form action="/crear_tercero" method="post">
         <div class="card">
           <div class="card-body">
-            <h1 class="card-title text-center">Crear Nuevo Tercero</h1>
+            <h1 class="card-title text-center">Crear Nuevo Registro Tercero</h1>
             <br>
             <div class="row">
               <div class="col-md-6">
@@ -63,17 +63,17 @@
               </div>
               <div class="col-md-6">
                 <div class="form-group">
-                  <label for="compañia" class="form-label">Compañía:</label>
+                  <label for="compañia" class="form-label">Compañía que representa:</label>
                   <input type="text" id="compañia" name="compañia" value="{{ tercero.compañia }}" class="form-control" required>
                 </div>
                 <br>
                 <div class="form-group">
-                  <label for="motivo" class="form-label">Motivo:</label>
+                  <label for="motivo" class="form-label">Motivo de la visita:</label>
                   <input type="text" id="motivo" name="motivo" value="{{ tercero.motivo }}" class="form-control" required>
                 </div>
                 <br>
                 <div class="form-group">
-                  <label for="dependencia" class="form-label">Dependencia:</label>
+                  <label for="dependencia" class="form-label">Dependencia visitada:</label>
                   <select id="dependencia" name="dependencia" class="form-control" data-width="auto" required>
                       <option value="" disabled selected>Seleccione una opción</option>
                       <option value="Administrativa">Administrativa</option>
@@ -99,7 +99,7 @@
                 </div>
                 <br>
                 <div class="form-group">
-                  <label for="equipo" class="form-label">Equipo:</label>
+                  <label for="equipo" class="form-label">Ingresa equipos:</label>
                   <select id="equipo" name="equipo" class="form-control" required>
                       <option value="" disabled selected>Seleccione una opción</option>
                       <option value="Tablet">Tablet</option>
@@ -110,7 +110,7 @@
               </div>
             </div>
             <br>
-            <button type="submit" class="btn btn-primary">Crear Tercero</button>
+            <button type="submit" class="btn btn-primary btn-lg">Crear Tercero</button>
           </div>
         </div>
       </form>

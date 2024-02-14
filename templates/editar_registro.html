@@ -15,7 +15,7 @@
     <div class="container mt-4">
         <div class="card">
             <div class="card-body">
-                <h1 class="card-title text-center">Editar Registro</h1>
+                <h1 class="card-title text-center">Editar Registro Interno</h1>
                 <br>
                 <form method="post" action="/editar_registro/{{ registro.id }}">
                     <div class="row">
@@ -31,14 +31,8 @@
                             </div>
                             <br>
                             <div class="form-group">
-                                <label class="form-label" for="rango">Vinculo:</label>
-                                <select id="area" name="area" class="form-control" data-width="auto" required>
-                                    <option value="" disabled selected>Seleccione un vinculo</option>
-                                    <option value="Administrativa" {% if registro.area == 'Administrativa' %} selected {% endif %}>Administrativa</option>
-                                    <option value="Gerencial" {% if registro.area == 'Gerencial' %} selected {% endif %}>Gerencial</option>
-                                    <option value="Comercial" {% if registro.area == 'Comercial' %} selected {% endif %}>Comercial</option>
-                                    <option value="Operaciones" {% if registro.area == 'Operaciones' %} selected {% endif %}>Operaciones</option>
-                                </select>
+                                <label class="form-label" for="rango">Area:</label>
+                                <input type="text" id="area" name="area" value="{{ registro.area }}" class="form-control" readonly>
                             </div>
                             <br>
                             <div class="form-group">
@@ -70,7 +64,7 @@
                         </div>
                     </div>
                     <br>    
-                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    <button type="submit" class="btn btn-primary btn-lg">Enviar</button>
                 </form>
             </div>
         </div>
@@ -86,15 +80,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta2/dist/js/bootstrap-select.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js"></script>
 
-    <script>
-        $(document).ready(function() {
-            // Inicializar select2 para el select de área
-            $('#area').select2({
-                theme: 'bootstrap-5',
-                allowClear: true,
-                placeholder: 'Seleccione un vinculo',
-            });
-        });
-    </script>
+
   </body>
 </html>

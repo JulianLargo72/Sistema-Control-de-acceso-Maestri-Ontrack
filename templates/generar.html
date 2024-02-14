@@ -29,7 +29,7 @@
 <br>
 <div class="card container mt-4">
   <div class="card-body">
-      <h1 class="card-title text-center mb-4">Generador de Códigos QR</h1>
+      <h1 class="card-title text-center mb-4">Generador de Códigos QR para interno</h1>
       <form method="post" action="{{ url_for('generar') }}" class="mx-auto">
           <div class="row">
               <!-- Columna 1 -->
@@ -61,7 +61,7 @@
                   </div>
               </div>
           </div>
-          <button type="submit" class="btn btn-success mx-auto">Generar QR</button>
+          <button type="submit" class="btn btn-success btn-lg mx-auto">Generar QR</button>
       </form>
 
       {% if mensaje %}
@@ -76,7 +76,7 @@
 </div>
 
 
-      <br><br><br>
+      <br><br><br><br><br>
       <footer class="bg-light p-3 text-center">
         <p class="mb-0">&copy; 2024 - Todos los derechos reservados | Maestri on Track S.A.S</p>
       </footer>

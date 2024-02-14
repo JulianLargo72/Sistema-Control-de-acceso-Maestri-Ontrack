@@ -96,7 +96,7 @@
                 </div>
               </div>
           </div>
-          <button type="submit" class="btn btn-success mx-auto">Generar QR</button>
+          <button type="submit" class="btn btn-success btn-lg mx-auto">Enviar</button>
       </form>
 
       {% if mensaje %}
@@ -144,6 +144,11 @@
                 allowClear: true,
                 placeholder: 'Seleccione una opcion',
             });
+            $('#dependencia').select2({
+              theme: 'bootstrap-5',
+              allowClear: true,
+              placeholder: 'Seleccione una opcion',
+          });
         });
     </script>
 </body>

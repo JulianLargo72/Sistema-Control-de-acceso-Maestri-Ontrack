@@ -28,7 +28,8 @@
     <div class="container mt-4">
         <div class="card">
           <div class="card-body">
-            <h1 class="card-title text-center">Lista de terceros</h1>
+            <h1 class="card-title text-center">Lista de Control de Acceso Terceros</h1>
+            <br>
             <form method="get" action="/filtrar_terceros">
               <div class="form-group">
                   <label for="fecha_inicio">Filtrar por fecha inicio:</label>
@@ -40,10 +41,10 @@
               </div>
               <br>
               <button type="submit" class="btn btn-success btn-lg">Filtrar</button>
-              <button type="submit" class="btn btn-secondary btn-lg" name="exportar" value="True">Exportar</button>
+              <button type="submit" class="btn btn-secondary btn-lg" name="exportar" value="True">Exportar Tercero</button>
             </form>
             <br>
-            <a href="/crear_tercero" class="btn btn-primary btn-lg float-end">Crear tercero</a>
+            <a href="/crear_tercero" class="btn btn-primary btn-lg float-end">Crear Registro</a>
             <br><br><br>
             <div class="table-responsive">
               <table class="table table-success table-striped text-center table-hover table-sm" id="terceros">
