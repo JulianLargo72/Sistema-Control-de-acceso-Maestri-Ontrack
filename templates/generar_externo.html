@@ -64,7 +64,7 @@
                 </div>
                 <div class="mb-3">
                     <label for="nombre" class="form-label">Dependencia visitada:</label>
-                    <select class="form-select" name="dependencia" required>
+                    <select id="dependencia" class="form-select" name="dependencia" required>
                       <option value="" disabled selected>Seleccione una opción</option>
                       <option value="Administrativa">Administrativa</option>
                       <option value="Gerencial">Gerencial</option>
@@ -87,7 +87,7 @@
                 </div>
                 <div class="mb-3">
                     <label for="nombre" class="form-label">Ingresa equipo:</label>
-                    <select class="form-select" name="equipo" required>
+                    <select id="equipo" class="form-select" name="equipo" required>
                         <option value="" disabled selected>Seleccione una opción</option>
                         <option value="Tablet">Tablet</option>
                         <option value="PC">PC</option>
@@ -142,7 +142,7 @@
             $('#recibe').select2({
                 theme: 'bootstrap-5',
                 allowClear: true,
-                placeholder: 'Seleccione una opcion'
+                placeholder: 'Seleccione una opcion',
             });
         });
     </script>

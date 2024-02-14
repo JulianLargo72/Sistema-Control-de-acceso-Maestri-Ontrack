@@ -32,7 +32,7 @@
                             <br>
                             <div class="form-group">
                                 <label for="area">Vinculo:</label>
-                                <select id="area" name="area" class="form-control w-100 bootstrap-select" required data-live-search="true">
+                                <select id="area" name="area" class="form-control w-100 bootstrap-select" data-width="auto" required data-live-search="true">
                                     <option value="Tercero">Tercero</option>
                                 </select>
                             </div>
@@ -75,7 +75,7 @@
                               <br>
                               <div class="form-group">
                                 <label for="dependencia" class="form-label">Dependencia:</label>
-                                <select id="dependencia" name="dependencia" class="form-control" required>
+                                <select id="dependencia" name="dependencia" class="form-control" data-width="auto" required>
                                     <option value="Administrativa" {% if tercero.area == 'Administrativa' %} selected {% endif %}>Administrativa</option>
                                     <option value="Gerencial" {% if tercero.area == 'Gerencial' %} selected {% endif %}>Gerencial</option>
                                     <option value="Comercial" {% if tercero.area == 'Comercial' %} selected {% endif %}>Comercial</option>
@@ -85,8 +85,8 @@
                               <br>
                               <div class="form-group">
                                 <label for="recibe" class="form-label">Recibe:</label>
-                                <select id="recibe" name="recibe" class="form-control w-100 bootstrap-select" required data-live-search="true">
-                                    <option value="{{ externo.recibe}}">{{ externo.recibe}}</option>
+                                <select id="recibe" name="recibe" class="form-control w-100 bootstrap-select" data-width="auto" required data-live-search="true">
+                                    <option value="{{ tercero.recibe}}">{{ tercero.recibe}}</option>
                                       {% for usuario in usuarios %}
                                       <option value="{{ usuario.nombre }}">{{ usuario.nombre }}</option>
                                       {% endfor %}
@@ -100,7 +100,7 @@
                               <br>
                               <div class="form-group">
                                 <label for="equipo" class="form-label">Equipo:</label>
-                                <select id="equipo" name="equipo" class="form-control" required>
+                                <select id="equipo" name="equipo" class="form-control" data-width="auto" required>
                                     <option value="Tablet" {% if tercero.equipo == 'Tablet' %} selected {% endif %}>Tablet</option>
                                     <option value="PC" {% if tercero.equipo == 'PC' %} selected {% endif %}>PC</option>
                                     <option value="N/A" {% if tercero.equipo == 'N/A' %} selected {% endif %}>N/A</option>
@@ -132,19 +132,25 @@
             $('#area').select2({
                 theme: 'bootstrap-5',
                 allowClear: true,
-                placeholder: 'Seleccione una opcion'
+                placeholder: 'Seleccione una opcion',
             });
 
             $('#dependencia').select2({
                 theme: 'bootstrap-5',
                 allowClear: true,
-                placeholder: 'Seleccione una opcion'
+                placeholder: 'Seleccione una opcion',
+            });
+
+            $('#recibe').select2({
+                theme: 'bootstrap-5',
+                allowClear: true,
+                placeholder: 'Seleccione una opcion',
             });
         
             $('#equipo').select2({
                 theme: 'bootstrap-5',
                 allowClear: true,
-                placeholder: 'Seleccione una opcion'
+                placeholder: 'Seleccione una opcion',
             });
         });
     </script>

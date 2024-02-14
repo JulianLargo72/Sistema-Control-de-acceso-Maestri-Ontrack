@@ -24,7 +24,7 @@
                   <div class="col-6">
                     <div class="form-group">
                       <label for="nombre_usuario">Nombre:</label>
-                      <select id="nombre_usuario" name="nombre" class="form-control w-100 bootstrap-select" required data-live-search="true">
+                      <select id="nombre_usuario" name="nombre" class="form-control w-100 bootstrap-select" data-width="auto" required data-live-search="true">
                         <option value="" disabled selected></option>
                         {% for externo in externos %}
                           <option value="{{ externo.nombre }}">{{ externo.nombre }}</option>
@@ -34,7 +34,7 @@
                     <br>
                     <div class="form-group">
                       <label for="identificacion_usuario">Identificación:</label>
-                      <select id="identificacion_usuario" name="identificacion" class="form-control w-100 bootstrap-select" required data-live-search="true">
+                      <select id="identificacion_usuario" name="identificacion" class="form-control w-100 bootstrap-select" data-width="auto" required data-live-search="true">
                         <option value="" disabled selected></option>
                         {% for externo in externos %}
                           <option value="{{ externo.identificacion }}">{{ externo.identificacion }} => {{externo.nombre}}</option>
@@ -44,7 +44,7 @@
                     <br>
                     <div class="form-group">
                       <label for="area">Vinculo:</label>
-                      <select id="area" name="area" class="form-control w-100 bootstrap-select" required data-live-search="true">
+                      <select id="area" name="area" class="form-control w-100 bootstrap-select" data-width="auto" required data-live-search="true">
                         <option value="" disabled selected></option>
                         <option value="Tercero">Tercero</option>
                       </select>
@@ -73,7 +73,7 @@
                   <br>
                   <div class="form-group">
                     <label for="rango" class="form-label">Rango</label>
-                    <select class="form-select" id="rango" name="rango" required>
+                    <select class="form-select" id="rango" name="rango" data-width="auto" required>
                       <option value="" disabled selected></option>
                       <option value="Entrada AM">Entrada AM</option>
                       <option value="Salida AM">Salida AM</option>
@@ -94,7 +94,7 @@
                     <br>
                     <div class="form-group">
                       <label for="dependencia" class="form-label">Dependencia:</label>
-                      <select id="dependencia" name="dependencia" class="form-control" required>
+                      <select id="dependencia" name="dependencia" class="form-control" data-width="auto" required>
                           <option value="" disabled selected>Seleccione una opción</option>
                           <option value="Administrativa">Administrativa</option>
                           <option value="Gerencial">Gerencial</option>
@@ -105,7 +105,7 @@
                     <br>
                     <div class="form-group">
                       <label for="recibe" class="form-label">Recibe:</label>
-                      <select id="recibe" name="recibe" class="form-control w-100 bootstrap-select" required data-live-search="true">
+                      <select id="recibe" name="recibe" class="form-control w-100 bootstrap-select" data-width="auto" required data-live-search="true">
                         <option value="" disabled selected>Seleccione una opción</option>
                           {% for usuario in usuarios %}
                           <option value="{{ usuario.nombre }}">{{ usuario.nombre }}</option>
@@ -156,40 +156,40 @@
           $('#nombre_usuario').select2({
               theme: 'bootstrap-5',
               allowClear: true,
-              placeholder: 'Seleccione una opcion'
+              placeholder: 'Seleccione una opcion',
           });
       
           // Inicializar select2 para el select de identificación de usuario
           $('#identificacion_usuario').select2({
               theme: 'bootstrap-5',
               allowClear: true,
-              placeholder: 'Seleccione una opcion'
+              placeholder: 'Seleccione una opcion',
           });
       
           // Inicializar select2 para el select de área
           $('#area').select2({
               theme: 'bootstrap-5',
               allowClear: true,
-              placeholder: 'Seleccione una opcion'
+              placeholder: 'Seleccione una opcion',
           });
 
           $('#dependencia').select2({
               theme: 'bootstrap-5',
               allowClear: true,
-              placeholder: 'Seleccione una opcion'
+              placeholder: 'Seleccione una opcion',
           });
       
           // Inicializar select2 para el select de identificación de usuario
           $('#recibe').select2({
               theme: 'bootstrap-5',
               allowClear: true,
-              placeholder: 'Seleccione una opcion'
+              placeholder: 'Seleccione una opcion',
           });
 
           $('#equipo').select2({
               theme: 'bootstrap-5',
               allowClear: true,
-              placeholder: 'Seleccione una opcion'
+              placeholder: 'Seleccione una opcion',
           });
       });
   </script>

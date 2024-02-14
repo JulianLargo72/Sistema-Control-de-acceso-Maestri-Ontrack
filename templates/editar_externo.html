@@ -22,7 +22,7 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="prefijo" class="form-label">Área:</label>
-                                <select class="form-select" name="prefijo" required>
+                                <select class="form-select" name="prefijo" data-width="auto" required>
                                     <option value="T" {% if externo.area == 'T' %} selected {% endif %}>Tercero</option>
                                     <!-- Aquí puedes agregar más opciones según sea necesario -->
                                 </select>
@@ -61,7 +61,7 @@
                             </div>
                             <div class="mb-3">
                                 <label for="recibe" class="form-label">Recibe:</label>
-                                <select id="recibe" name="recibe" class="form-control w-100 bootstrap-select" required data-live-search="true">
+                                <select id="recibe" name="recibe" class="form-control w-100 bootstrap-select" data-width="auto" required data-live-search="true">
                                 <option value="{{ externo.recibe }}">{{ externo.recibe }}</option>
                                   {% for usuario in usuarios %}
                                     <option value="{{ usuario.nombre }}">{{ usuario.nombre }}</option>
@@ -74,7 +74,7 @@
                             </div>
                             <div class="mb-3">
                                 <label for="equipo" class="form-label">Equipo:</label>
-                                <select id="equipo" name="equipo" class="form-control" required>
+                                <select id="equipo" name="equipo" class="form-control" data-width="auto" required>
                                     <option value="Tablet" {% if externo.equipo == 'Tablet' %} selected {% endif %}>Tablet</option>
                                     <option value="PC" {% if externo.equipo == 'PC' %} selected {% endif %}>PC</option>
                                     <option value="N/A" {% if externo.equipo == 'N/A' %} selected {% endif %}>N/A</option>
@@ -111,14 +111,20 @@
             $('#dependencia').select2({
                 theme: 'bootstrap-5',
                 allowClear: true,
-                placeholder: 'Seleccione una opcion'
+                placeholder: 'Seleccione una opcion',
             });
         
             // Inicializar select2 para el select de identificación de usuario
             $('#recibe').select2({
                 theme: 'bootstrap-5',
                 allowClear: true,
-                placeholder: 'Seleccione una opcion'
+                placeholder: 'Seleccione una opcion',
+            });
+
+            $('#equipo').select2({
+                theme: 'bootstrap-5',
+                allowClear: true,
+                placeholder: 'Seleccione una opcion',
             });
         });
     </script>
