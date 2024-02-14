@@ -26,15 +26,6 @@ areas = {
     'T': 'Tercero'
 }
 
-# Variable global para mantener el último ID utilizado
-ultimo_id = 1
-
-def obtener_id():
-    global ultimo_id
-    id_actual = ultimo_id
-    ultimo_id += 1
-    return id_actual
-
 
 def obtener_area(codigo):
     primer_caracter = codigo[0]
@@ -63,19 +54,34 @@ def obtener_hora_entrada_desde_db(identificacion):
     # Obtener la fecha actual
     fecha_actual = datetime.now().strftime('%Y-%m-%d')
 
-    # Realizar una consulta SQL para obtener el primer registro de la identificación dada para el día actual
-    query = f"SELECT hora_entrada FROM registros WHERE identificacion = '{identificacion}' AND fecha = '{fecha_actual}' ORDER BY id ASC LIMIT 1"
-    
-    # Ejecutar la consulta y obtener los resultados
-    resultados = database.ejecutar_consulta_sql(query)
-    
-    if resultados:
-        # Si hay resultados, la hora de entrada es el primer elemento del primer resultado
-        hora_entrada = resultados[0][0]
+    # Consulta SQL para obtener la hora de entrada desde la tabla registros
+    query_registros = f"SELECT hora_entrada FROM registros WHERE identificacion = '{identificacion}' AND fecha = '{fecha_actual}' ORDER BY id ASC LIMIT 1"
+
+    # Ejecutar la consulta y obtener los resultados de registros
+    resultados_registros = database.ejecutar_consulta_sql(query_registros)
+
+    # Si hay resultados en la tabla registros, retornar la hora de entrada encontrada
+    if resultados_registros:
+        hora_entrada = resultados_registros[0][0]
         return hora_entrada
+
+    # Si no hay resultados en la tabla registros, consultar la tabla tercero para obtener la hora de entrada
     else:
-        # Si no hay resultados para el día actual, retornar la hora actual
-        return datetime.now().strftime('%H:%M:%S')
+        # Consulta SQL para obtener la hora de entrada desde la tabla tercero
+        query_externo = f"SELECT hora_entrada FROM tercero WHERE identificacion = '{identificacion}'"
+
+        # Ejecutar la consulta y obtener los resultados de tercero
+        resultados_externo = database.ejecutar_consulta_sql(query_externo)
+
+        # Si hay resultados en la tabla tercero, retornar la hora de entrada encontrada
+        if resultados_externo:
+            hora_entrada = resultados_externo[0][0]
+            return hora_entrada
+
+        # Si no hay resultados en la tabla externo, retornar la hora actual
+        else:
+            return datetime.now().strftime('%H:%M:%S')
+
     
 def codigo_existe_en_tercero_o_usuario(codigo):
     query_usuarios = f"SELECT COUNT(*) FROM usuarios WHERE identificacion = '{codigo}'"

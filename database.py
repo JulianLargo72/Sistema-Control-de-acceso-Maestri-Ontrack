@@ -69,6 +69,13 @@ def guardar_registro_tercero_en_mysql(identificacion, nombre, area, fecha, hora_
     mydb.commit()
     cursor.close()
 
+def insertar_usuario(identificacion, nombre, area, correo, qr_path):
+    cursor = mydb.cursor()
+    sql = "INSERT INTO usuarios (identificacion, nombre, area, correo, qr_path) VALUES (%s, %s, %s, %s, %s)"
+    val = (identificacion, nombre, area, correo, qr_path)
+    cursor.execute(sql, val)
+    mydb.commit()
+    cursor.close()
     
 def insertar_externo(identificacion, nombre, area, correo, compañia, motivo, dependencia, recibe, arl, equipo, qr_path):
     cursor = mydb.cursor()
@@ -304,11 +311,11 @@ def obtener_tercero_entre_fechas(fecha_inicio, fecha_fin):
         if 'cursor' in locals():
             cursor.close()
             
-def editar_tercero(id_tercero, identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango):
+def editar_tercero(id_tercero, identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango, compañia, dependencia, recibe, arl, equipo):
     try:
         cursor = mydb.cursor()
-        sql = "UPDATE tercero SET identificacion = %s, nombre = %s, area = %s, fecha = %s, hora_escaneo = %s, hora_entrada = %s, hora_salida = %s, rango = %s WHERE id = %s"
-        val = (identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango, id_tercero)
+        sql = "UPDATE tercero SET identificacion = %s, nombre = %s, area = %s, fecha = %s, hora_escaneo = %s, hora_entrada = %s, hora_salida = %s, rango = %s, compañia = %s, dependencia = %s, recibe = %s, arl = %s, equipo = %s WHERE id = %s"
+        val = (identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango, compañia, dependencia, recibe, arl, equipo, id_tercero)
         cursor.execute(sql, val)
         mydb.commit()
         print("Tercero editado correctamente.")
@@ -333,11 +340,11 @@ def obtener_tercero_por_id(id_tercero):
             cursor.close()
 
 
-def crear_tercero(identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango):
+def crear_tercero(identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango, compañia, dependencia, recibe, arl, equipo):
     try:
         cursor = mydb.cursor()
-        sql = "INSERT INTO tercero (identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-        val = (identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango)
+        sql = "INSERT INTO tercero (identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango, compañia, dependencia, recibe, arl, equipo) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        val = (identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango, compañia, dependencia, recibe, arl, equipo)
         cursor.execute(sql, val)
         mydb.commit()
         cursor.close()

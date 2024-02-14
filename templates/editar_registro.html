@@ -22,20 +22,12 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="nombre_usuario">Nombre:</label>
-                                <select id="nombre_usuario" name="nombre" class="form-control w-100 bootstrap-select" required data-live-search="true">
-                                    {% for usuario in usuarios %}
-                                        <option value="{{ usuario.nombre }}">{{ usuario.nombre }}</option>
-                                    {% endfor %}
-                                </select>
+                                <input type="text" id="nombre" name="rango" value="{{ registro.nombre }}" class="form-control" readonly>
                             </div>
                             <br>
                             <div class="form-group">
                                 <label for="identificacion_usuario">Identificación:</label>
-                                <select id="identificacion_usuario" name="identificacion" class="form-control w-100 bootstrap-select" required data-live-search="true">
-                                    {% for usuario in usuarios %}
-                                        <option value="{{ usuario.identificacion }}">{{ usuario.identificacion }} => {{usuario.nombre}}</option>
-                                    {% endfor %}
-                                </select>
+                                <input type="text" id="identificacion" name="rango" value="{{ registro.identificacion }}" class="form-control" readonly>
                             </div>
                             <br>
                             <div class="form-group">
@@ -96,20 +88,6 @@
 
     <script>
         $(document).ready(function() {
-            // Inicializar select2 para el select de nombre de usuario
-            $('#nombre_usuario').select2({
-                theme: 'bootstrap-5',
-                allowClear: true,
-                placeholder: 'Seleccione un nombre de usuario'
-            });
-        
-            // Inicializar select2 para el select de identificación de usuario
-            $('#identificacion_usuario').select2({
-                theme: 'bootstrap-5',
-                allowClear: true,
-                placeholder: 'Seleccione una identificación de usuario'
-            });
-        
             // Inicializar select2 para el select de área
             $('#area').select2({
                 theme: 'bootstrap-5',

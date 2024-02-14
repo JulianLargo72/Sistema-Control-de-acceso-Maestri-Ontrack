@@ -26,8 +26,8 @@
                       <label for="nombre_usuario">Nombre:</label>
                       <select id="nombre_usuario" name="nombre" class="form-control w-100 bootstrap-select" required data-live-search="true">
                         <option value="" disabled selected></option>
-                        {% for usuario in usuarios %}
-                          <option value="{{ usuario.nombre }}">{{ usuario.nombre }}</option>
+                        {% for externo in externos %}
+                          <option value="{{ externo.nombre }}">{{ externo.nombre }}</option>
                         {% endfor %}
                       </select>
                     </div>
@@ -36,8 +36,8 @@
                       <label for="identificacion_usuario">Identificación:</label>
                       <select id="identificacion_usuario" name="identificacion" class="form-control w-100 bootstrap-select" required data-live-search="true">
                         <option value="" disabled selected></option>
-                        {% for usuario in usuarios %}
-                          <option value="{{ usuario.identificacion }}">{{ usuario.identificacion }} => {{usuario.nombre}}</option>
+                        {% for externo in externos %}
+                          <option value="{{ externo.identificacion }}">{{ externo.identificacion }} => {{externo.nombre}}</option>
                         {% endfor %}
                       </select>
                     </div>
@@ -56,32 +56,78 @@
                     </div>
                   </div>
                   <br>
+                  <div class="form-group">
+                    <label for="hora_escaneo" class="form-label">Hora de Escaneo</label>
+                    <input type="time" class="form-control" id="hora_escaneo" name="hora_escaneo" step="1" required>
+                  </div>
+                  <br>
+                  <div class="form-group">
+                    <label for="hora_entrada" class="form-label">Hora de Entrada</label>
+                    <input type="time" class="form-control" id="hora_entrada" name="hora_entrada" step="1" required>
+                  </div>
+                  <br>
+                  <div class="form-group">
+                    <label for="hora_salida" class="form-label">Hora de Salida</label>
+                    <input type="time" class="form-control" id="hora_salida" name="hora_salida" step="1" required>
+                  </div>
+                  <br>
+                  <div class="form-group">
+                    <label for="rango" class="form-label">Rango</label>
+                    <select class="form-select" id="rango" name="rango" required>
+                      <option value="" disabled selected></option>
+                      <option value="Entrada AM">Entrada AM</option>
+                      <option value="Salida AM">Salida AM</option>
+                      <option value="Entrada PM">Entrada PM</option>
+                      <option value="Salida PM">Salida PM</option>
+                    </select>
+                  </div>
                   <div class="col-6">
                     <div class="form-group">
-                      <label for="hora_escaneo" class="form-label">Hora de Escaneo</label>
-                      <input type="time" class="form-control" id="hora_escaneo" name="hora_escaneo" step="1" required>
+                      <label for="compañia" class="form-label">Compañía:</label>
+                      <input type="text" id="compañia" name="compañia" value="{{ tercero.compañia }}" class="form-control" required>
                     </div>
                     <br>
                     <div class="form-group">
-                      <label for="hora_entrada" class="form-label">Hora de Entrada</label>
-                      <input type="time" class="form-control" id="hora_entrada" name="hora_entrada" step="1" required>
+                      <label for="motivo" class="form-label">Motivo:</label>
+                      <input type="text" id="motivo" name="motivo" value="{{ tercero.motivo }}" class="form-control" required>
                     </div>
                     <br>
                     <div class="form-group">
-                      <label for="hora_salida" class="form-label">Hora de Salida</label>
-                      <input type="time" class="form-control" id="hora_salida" name="hora_salida" step="1" required>
-                    </div>
-                    <br>
-                    <div class="form-group">
-                      <label for="rango" class="form-label">Rango</label>
-                      <select class="form-select" id="rango" name="rango" required>
-                        <option value="" disabled selected></option>
-                        <option value="Entrada AM">Entrada AM</option>
-                        <option value="Salida AM">Salida AM</option>
-                        <option value="Entrada PM">Entrada PM</option>
-                        <option value="Salida PM">Salida PM</option>
+                      <label for="dependencia" class="form-label">Dependencia:</label>
+                      <select id="dependencia" name="dependencia" class="form-control" required>
+                          <option value="" disabled selected>Seleccione una opción</option>
+                          <option value="Administrativa">Administrativa</option>
+                          <option value="Gerencial">Gerencial</option>
+                          <option value="Comercial">Comercial</option>
+                          <option value="Operaciones">Operaciones</option>
                       </select>
                     </div>
+                    <br>
+                    <div class="form-group">
+                      <label for="recibe" class="form-label">Recibe:</label>
+                      <select id="recibe" name="recibe" class="form-control w-100 bootstrap-select" required data-live-search="true">
+                        <option value="" disabled selected>Seleccione una opción</option>
+                          {% for usuario in usuarios %}
+                          <option value="{{ usuario.nombre }}">{{ usuario.nombre }}</option>
+                          {% endfor %}
+                      </select>
+                    </div>
+                    <br>
+                    <div class="form-group">
+                      <label for="arl" class="form-label">ARL:</label>
+                      <input type="text" id="arl" name="arl" value="{{ tercero.arl }}" class="form-control" required>
+                    </div>
+                    <br>
+                    <div class="form-group">
+                      <label for="equipo" class="form-label">Equipo:</label>
+                      <select id="equipo" name="equipo" class="form-control" required>
+                          <option value="" disabled selected>Seleccione una opción</option>
+                          <option value="Tablet">Tablet</option>
+                          <option value="PC">PC</option>
+                          <option value="N/A">N/A</option>
+                      </select>
+                    </div>
+                    
                   </div>
                 </div>
                 <button type="submit" class="btn btn-primary">Crear Tercero</button>
@@ -105,34 +151,47 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js"></script>
 
     <script>
-        $(document).ready(function() {
-            // Inicializar select2 para el select de nombre de usuario
-            $('#nombre_usuario').select2({
-                theme: 'bootstrap-5',
-                allowClear: true,
-                placeholder: 'Seleccione un nombre de usuario'
-            });
-        
-            // Inicializar select2 para el select de identificación de usuario
-            $('#identificacion_usuario').select2({
-                theme: 'bootstrap-5',
-                allowClear: true,
-                placeholder: 'Seleccione una identificación de usuario'
-            });
-        
-            // Inicializar select2 para el select de área
-            $('#area').select2({
-                theme: 'bootstrap-5',
-                allowClear: true,
-                placeholder: 'Seleccione un vinculo'
-            });
+      $(document).ready(function() {
+          // Inicializar select2 para el select de nombre de usuario
+          $('#nombre_usuario').select2({
+              theme: 'bootstrap-5',
+              allowClear: true,
+              placeholder: 'Seleccione una opcion'
+          });
+      
+          // Inicializar select2 para el select de identificación de usuario
+          $('#identificacion_usuario').select2({
+              theme: 'bootstrap-5',
+              allowClear: true,
+              placeholder: 'Seleccione una opcion'
+          });
+      
+          // Inicializar select2 para el select de área
+          $('#area').select2({
+              theme: 'bootstrap-5',
+              allowClear: true,
+              placeholder: 'Seleccione una opcion'
+          });
 
-             $('#rango').select2({
-                theme: 'bootstrap-5',
-                allowClear: true,
-                placeholder: 'Seleccione un rango'
-            });
-        });
-    </script>
+          $('#dependencia').select2({
+              theme: 'bootstrap-5',
+              allowClear: true,
+              placeholder: 'Seleccione una opcion'
+          });
+      
+          // Inicializar select2 para el select de identificación de usuario
+          $('#recibe').select2({
+              theme: 'bootstrap-5',
+              allowClear: true,
+              placeholder: 'Seleccione una opcion'
+          });
+
+          $('#equipo').select2({
+              theme: 'bootstrap-5',
+              allowClear: true,
+              placeholder: 'Seleccione una opcion'
+          });
+      });
+  </script>
   </body>
 </html>

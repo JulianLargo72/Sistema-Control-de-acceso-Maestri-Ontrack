@@ -62,11 +62,12 @@
                             <div class="mb-3">
                                 <label for="recibe" class="form-label">Recibe:</label>
                                 <select id="recibe" name="recibe" class="form-control w-100 bootstrap-select" required data-live-search="true">
-                                    {% for usuario in usuarios %}
+                                <option value="{{ externo.recibe }}">{{ externo.recibe }}</option>
+                                  {% for usuario in usuarios %}
                                     <option value="{{ usuario.nombre }}">{{ usuario.nombre }}</option>
-                                    {% endfor %}
+                                  {% endfor %}
                                 </select>
-                            </div>
+                              </div>
                             <div class="mb-3">
                                 <label for="arl" class="form-label">ARL:</label>
                                 <input type="text" id="arl" name="arl" value="{{ externo.arl }}" class="form-control" required>
@@ -110,14 +111,14 @@
             $('#dependencia').select2({
                 theme: 'bootstrap-5',
                 allowClear: true,
-                placeholder: 'Seleccione un nombre de usuario'
+                placeholder: 'Seleccione una opcion'
             });
         
             // Inicializar select2 para el select de identificación de usuario
             $('#recibe').select2({
                 theme: 'bootstrap-5',
                 allowClear: true,
-                placeholder: 'Seleccione una identificación de usuario'
+                placeholder: 'Seleccione una opcion'
             });
         });
     </script>

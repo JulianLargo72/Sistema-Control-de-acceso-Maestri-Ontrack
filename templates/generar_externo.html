@@ -73,14 +73,14 @@
                     </select>
                 </div>
                 <div class="mb-3">
-                    <label for="nombre" class="form-label">Persona que lo recibe:</label>
+                    <label for="recibe" class="form-label">Recibe:</label>
                     <select id="recibe" name="recibe" class="form-control w-100 bootstrap-select" required data-live-search="true">
-                      <option value="" disabled selected></option>
+                      <option value="" disabled selected>Seleccione una opción</option>
                       {% for usuario in usuarios %}
                         <option value="{{ usuario.nombre }}">{{ usuario.nombre }}</option>
                       {% endfor %}
                     </select>
-                </div>
+                  </div>
                 <div class="mb-3">
                     <label for="nombre" class="form-label">ARL:</label>
                     <input type="text" class="form-control" name="arl" required />
@@ -142,7 +142,7 @@
             $('#recibe').select2({
                 theme: 'bootstrap-5',
                 allowClear: true,
-                placeholder: 'Seleccione un vinculo'
+                placeholder: 'Seleccione una opcion'
             });
         });
     </script>

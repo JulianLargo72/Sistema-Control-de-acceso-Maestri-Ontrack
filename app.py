@@ -116,11 +116,17 @@ def generar_externo():
     usuarios = database.obtener_usuarios()
     return render_template('generar_externo.html', usuarios=usuarios)
 
-
 @app.route('/externos')
 def mostrar_externos():
+    # Obtener los datos de la tabla de externos
     externos = database.obtener_externos()
-    return render_template('externos.html', externos=externos)
+
+    # Obtener los datos de la tabla de usuarios
+    usuarios = database.obtener_usuarios()
+
+    return render_template('externos.html', externos=externos, usuarios=usuarios)
+
+
 
 @app.route('/editar_externo/<int:id_externo>', methods=['GET', 'POST'])
 def editar_externo(id_externo):
@@ -314,6 +320,14 @@ def mostrar_terceros():
     terceros = database.obtener_tercero()
     return render_template('terceros.html', terceros=terceros)
 
+@app.route('/ver_tercero/<int:id_tercero>')
+def ver_tercero(id_tercero):
+    tercero = database.obtener_tercero_por_id(id_tercero)
+    if tercero:
+        return render_template('detalles_tercero.html', tercero=tercero)
+    else:
+        return "Usuario no encontrado"
+
 @app.route('/filtrar_terceros', methods=['GET'])
 def filtrar_terceros():
     fecha_inicio = request.args.get('fecha_inicio')
@@ -355,7 +369,13 @@ def crear_tercero():
         hora_entrada = request.form['hora_entrada']
         hora_salida = request.form['hora_salida']
         rango = request.form['rango']
-        if database.crear_tercero(identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango):
+        compañia = request.form['compañia']
+        motivo = request.form['motivo']
+        dependencia = request.form['dependencia']
+        recibe = request.form['recibe']
+        arl = request.form['arl']
+        equipo = request.form['equipo']
+        if database.crear_tercero(identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango, compañia, dependencia, recibe, arl, equipo):
             flash('Registro eliminado correctamente', 'success')
             return redirect(url_for('mostrar_terceros'))
         else:
@@ -363,9 +383,11 @@ def crear_tercero():
             return redirect(url_for('crear_tercero'))
     else:
         # Obtener la lista de usuarios desde la base de datos
+        tercero = database.obtener_tercero()
         usuarios = database.obtener_usuarios()
+        externos = database.obtener_externos()
         # Renderizar la vista HTML para crear un nuevo tercer0, pasando la lista de usuarios al template
-        return render_template('crear_tercero.html', usuarios=usuarios)
+        return render_template('crear_tercero.html', tercero= tercero, externos = externos, usuarios=usuarios)
 
 
 @app.route('/editar_tercero/<int:id_tercero>', methods=['GET', 'POST'])
@@ -380,16 +402,22 @@ def editar_tercero(id_tercero):
         hora_entrada = request.form['hora_entrada']
         hora_salida = request.form['hora_salida']
         rango = request.form['rango']
+        compañia = request.form['compañia']
+        dependencia = request.form['dependencia']
+        recibe = request.form['recibe']
+        arl = request.form['arl']
+        equipo = request.form['equipo']
 
         # Llamar a la función para editar el tercero en la base de datos
-        database.editar_tercero(id_tercero, identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango)
+        database.editar_tercero(id_tercero, identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango, compañia, dependencia, recibe, arl, equipo)
         flash('Registro editado correctamente', 'success')
         return redirect(url_for('mostrar_terceros'))
     else:
         # Obtener el tercero a editar de la base de datos
         tercero = database.obtener_tercero_por_id(id_tercero)
         usuarios = database.obtener_usuarios()
-        return render_template('editar_tercero.html', tercero=tercero, usuarios=usuarios)
+        externos = database.obtener_externos()
+        return render_template('editar_tercero.html', externos = externos, tercero=tercero, usuarios=usuarios)
 
 @app.route('/borrar_tercero/<int:id_tercero>', methods=['GET', 'POST'])
 def borrar_tercero_route(id_tercero):

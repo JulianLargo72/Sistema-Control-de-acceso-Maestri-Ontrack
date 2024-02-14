@@ -22,20 +22,12 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="nombre_usuario">Nombre:</label>
-                                <select id="nombre_usuario" name="nombre" class="form-control w-100 bootstrap-select" required data-live-search="true">
-                                    {% for usuario in usuarios %}
-                                        <option value="{{ usuario.nombre }}">{{ usuario.nombre }}</option>
-                                    {% endfor %}
-                                </select>
+                                <input type="text" id="nombre" name="rango" value="{{ tercero.nombre }}" class="form-control" readonly>
                             </div>
                             <br>
                             <div class="form-group">
                                 <label for="identificacion_usuario">Identificación:</label>
-                                <select id="identificacion_usuario" name="identificacion" class="form-control w-100 bootstrap-select" required data-live-search="true">
-                                    {% for usuario in usuarios %}
-                                        <option value="{{ usuario.identificacion }}">{{ usuario.identificacion }} => {{usuario.nombre}}</option>
-                                    {% endfor %}
-                                </select>
+                                <input type="text" id="identificacion" name="rango" value="{{ tercero.identificacion }}" class="form-control" readonly>
                             </div>
                             <br>
                             <div class="form-group">
@@ -49,9 +41,6 @@
                                 <label for="fecha">Fecha:</label>
                                 <input type="date" id="fecha" name="fecha" value="{{ tercero.fecha }}" class="form-control" required>
                             </div>
-                        </div>
-                        <br>
-                        <div class="col-md-6">
                             <div class="form-group">
                                 <label for="hora_escaneo">Hora Escaneo:</label>
                                 <input type="time" id="hora_escaneo" name="hora_escaneo" value="{{ tercero.hora_escaneo }}" class="form-control" step="1"required>
@@ -71,6 +60,52 @@
                                 <label for="rango">Rango:</label>
                                 <input type="text" id="rango" name="rango" value="{{ tercero.rango }}" class="form-control" required>
                             </div>
+                        </div>
+                        <br>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="compañia" class="form-label">Compañía:</label>
+                                <input type="text" id="compañia" name="compañia" value="{{ tercero.compañia }}" class="form-control" required>
+                              </div>
+                              <br>
+                              <div class="form-group">
+                                <label for="motivo" class="form-label">Motivo:</label>
+                                <input type="text" id="motivo" name="motivo" value="{{ tercero.motivo }}" class="form-control" required>
+                              </div>
+                              <br>
+                              <div class="form-group">
+                                <label for="dependencia" class="form-label">Dependencia:</label>
+                                <select id="dependencia" name="dependencia" class="form-control" required>
+                                    <option value="Administrativa" {% if tercero.area == 'Administrativa' %} selected {% endif %}>Administrativa</option>
+                                    <option value="Gerencial" {% if tercero.area == 'Gerencial' %} selected {% endif %}>Gerencial</option>
+                                    <option value="Comercial" {% if tercero.area == 'Comercial' %} selected {% endif %}>Comercial</option>
+                                    <option value="Operaciones" {% if tercero.area == 'Operaciones' %} selected {% endif %}>Operaciones</option>
+                                </select>
+                              </div>
+                              <br>
+                              <div class="form-group">
+                                <label for="recibe" class="form-label">Recibe:</label>
+                                <select id="recibe" name="recibe" class="form-control w-100 bootstrap-select" required data-live-search="true">
+                                    <option value="{{ externo.recibe}}">{{ externo.recibe}}</option>
+                                      {% for usuario in usuarios %}
+                                      <option value="{{ usuario.nombre }}">{{ usuario.nombre }}</option>
+                                      {% endfor %}
+                                  </select>
+                              </div>
+                              <br>
+                              <div class="form-group">
+                                <label for="arl" class="form-label">ARL:</label>
+                                <input type="text" id="arl" name="arl" value="{{ tercero.arl }}" class="form-control" required>
+                              </div>
+                              <br>
+                              <div class="form-group">
+                                <label for="equipo" class="form-label">Equipo:</label>
+                                <select id="equipo" name="equipo" class="form-control" required>
+                                    <option value="Tablet" {% if tercero.equipo == 'Tablet' %} selected {% endif %}>Tablet</option>
+                                    <option value="PC" {% if tercero.equipo == 'PC' %} selected {% endif %}>PC</option>
+                                    <option value="N/A" {% if tercero.equipo == 'N/A' %} selected {% endif %}>N/A</option>
+                                </select>
+                              </div>
                         </div>
                     </div>
                     <br>    
@@ -92,25 +127,24 @@
 
     <script>
         $(document).ready(function() {
-            // Inicializar select2 para el select de nombre de usuario
-            $('#nombre_usuario').select2({
-                theme: 'bootstrap-5',
-                allowClear: true,
-                placeholder: 'Seleccione un nombre de usuario'
-            });
-        
-            // Inicializar select2 para el select de identificación de usuario
-            $('#identificacion_usuario').select2({
-                theme: 'bootstrap-5',
-                allowClear: true,
-                placeholder: 'Seleccione una identificación de usuario'
-            });
         
             // Inicializar select2 para el select de área
             $('#area').select2({
                 theme: 'bootstrap-5',
                 allowClear: true,
-                placeholder: 'Seleccione un vinculo'
+                placeholder: 'Seleccione una opcion'
+            });
+
+            $('#dependencia').select2({
+                theme: 'bootstrap-5',
+                allowClear: true,
+                placeholder: 'Seleccione una opcion'
+            });
+        
+            $('#equipo').select2({
+                theme: 'bootstrap-5',
+                allowClear: true,
+                placeholder: 'Seleccione una opcion'
             });
         });
     </script>
