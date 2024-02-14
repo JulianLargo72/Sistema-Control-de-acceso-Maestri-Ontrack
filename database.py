@@ -46,7 +46,7 @@ def guardar_registro_en_mysql(identificacion, nombre, area, fecha, hora_escaneo,
     mydb.commit()
     cursor.close()
     
-def guardar_registro_tercero_en_mysql(identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango):
+def guardar_registro_tercero_en_mysql(identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida):
     cursor = mydb.cursor()
 
     # Consultar los datos del externo basados en la identificación
@@ -62,8 +62,8 @@ def guardar_registro_tercero_en_mysql(identificacion, nombre, area, fecha, hora_
         compañia, motivo, dependencia, recibe, arl, equipo = "N/A", "N/A", "N/A", "N/A", "N/A", "N/A"
 
     # Insertar el registro en la tabla de tercero con los campos obtenidos y los datos recibidos como parámetros
-    sql = "INSERT INTO tercero (identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango, compañia, motivo, dependencia, recibe, arl, equipo) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-    val = (identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango, compañia, motivo, dependencia, recibe, arl, equipo)
+    sql = "INSERT INTO tercero (identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, compañia, motivo, dependencia, recibe, arl, equipo) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    val = (identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, compañia, motivo, dependencia, recibe, arl, equipo)
     cursor.execute(sql, val)
     
     mydb.commit()
@@ -311,11 +311,11 @@ def obtener_tercero_entre_fechas(fecha_inicio, fecha_fin):
         if 'cursor' in locals():
             cursor.close()
             
-def editar_tercero(id_tercero, identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango, compañia, dependencia, recibe, arl, equipo):
+def editar_tercero(id_tercero, identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, compañia, motivo, dependencia, recibe, arl, equipo):
     try:
         cursor = mydb.cursor()
-        sql = "UPDATE tercero SET identificacion = %s, nombre = %s, area = %s, fecha = %s, hora_escaneo = %s, hora_entrada = %s, hora_salida = %s, rango = %s, compañia = %s, dependencia = %s, recibe = %s, arl = %s, equipo = %s WHERE id = %s"
-        val = (identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango, compañia, dependencia, recibe, arl, equipo, id_tercero)
+        sql = "UPDATE tercero SET identificacion = %s, nombre = %s, area = %s, fecha = %s, hora_escaneo = %s, hora_entrada = %s, hora_salida = %s, compañia = %s, motivo= %s, dependencia = %s, recibe = %s, arl = %s, equipo = %s WHERE id = %s"
+        val = (identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, compañia, motivo, dependencia, recibe, arl, equipo, id_tercero)
         cursor.execute(sql, val)
         mydb.commit()
         print("Tercero editado correctamente.")
@@ -340,11 +340,11 @@ def obtener_tercero_por_id(id_tercero):
             cursor.close()
 
 
-def crear_tercero(identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango, compañia, dependencia, recibe, arl, equipo):
+def crear_tercero(identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, compañia, motivo, dependencia, recibe, arl, equipo):
     try:
         cursor = mydb.cursor()
-        sql = "INSERT INTO tercero (identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango, compañia, dependencia, recibe, arl, equipo) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-        val = (identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango, compañia, dependencia, recibe, arl, equipo)
+        sql = "INSERT INTO tercero (identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, compañia, motivo, dependencia, recibe, arl, equipo) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        val = (identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, compañia, motivo, dependencia, recibe, arl, equipo)
         cursor.execute(sql, val)
         mydb.commit()
         cursor.close()

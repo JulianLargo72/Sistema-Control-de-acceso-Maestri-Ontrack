@@ -57,7 +57,8 @@
                     <th>Hora Escaneo</th>
                     <th>Hora entrada</th>
                     <th>Hora Salida</th>
-                    <th>Rango</th>
+                    <th>Recibe</th>
+                    <th>Compañia</th>
                     <th>Acciones</th>
                   </tr>
                 </thead>
@@ -72,7 +73,8 @@
                     <td>{{ tercero['hora_escaneo'] }}</td>
                     <td>{{ tercero['hora_entrada'] }}</td>
                     <td>{{ tercero['hora_salida'] }}</td>
-                    <td>{{ tercero['rango'] }}</td>
+                    <td>{{ tercero['recibe'] }}</td>
+                    <td>{{ tercero['compañia'] }}</td>
                     <td>
                         <div class="btn-group" role="group">
                           <form action="/ver_tercero/{{ tercero['id'] }}" method="get">

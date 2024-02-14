@@ -368,14 +368,13 @@ def crear_tercero():
         hora_escaneo = request.form['hora_escaneo']
         hora_entrada = request.form['hora_entrada']
         hora_salida = request.form['hora_salida']
-        rango = request.form['rango']
         compañia = request.form['compañia']
         motivo = request.form['motivo']
         dependencia = request.form['dependencia']
         recibe = request.form['recibe']
         arl = request.form['arl']
         equipo = request.form['equipo']
-        if database.crear_tercero(identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango, compañia, dependencia, recibe, arl, equipo):
+        if database.crear_tercero(identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, compañia, motivo, dependencia, recibe, arl, equipo):
             flash('Registro eliminado correctamente', 'success')
             return redirect(url_for('mostrar_terceros'))
         else:
@@ -386,7 +385,7 @@ def crear_tercero():
         tercero = database.obtener_tercero()
         usuarios = database.obtener_usuarios()
         externos = database.obtener_externos()
-        # Renderizar la vista HTML para crear un nuevo tercer0, pasando la lista de usuarios al template
+
         return render_template('crear_tercero.html', tercero= tercero, externos = externos, usuarios=usuarios)
 
 
@@ -401,15 +400,15 @@ def editar_tercero(id_tercero):
         hora_escaneo = request.form['hora_escaneo']
         hora_entrada = request.form['hora_entrada']
         hora_salida = request.form['hora_salida']
-        rango = request.form['rango']
         compañia = request.form['compañia']
+        motivo = request.form['motivo']
         dependencia = request.form['dependencia']
         recibe = request.form['recibe']
         arl = request.form['arl']
         equipo = request.form['equipo']
 
         # Llamar a la función para editar el tercero en la base de datos
-        database.editar_tercero(id_tercero, identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango, compañia, dependencia, recibe, arl, equipo)
+        database.editar_tercero(id_tercero, identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, compañia, motivo, dependencia, recibe, arl, equipo)
         flash('Registro editado correctamente', 'success')
         return redirect(url_for('mostrar_terceros'))
     else:
