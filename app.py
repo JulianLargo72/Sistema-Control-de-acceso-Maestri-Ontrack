@@ -239,22 +239,48 @@ def filtrar_registros():
     fecha_inicio = datetime.strptime(fecha_inicio, '%Y-%m-%d')
     fecha_fin = datetime.strptime(fecha_fin, '%Y-%m-%d')
 
-    registros_filtrados = database.obtener_registros_entre_fechas(fecha_inicio, fecha_fin)
-    
+    # Verificar qué botón se ha presionado
     if request.args.get('exportar') == 'True':
+        registros_filtrados = database.obtener_registros_entre_fechas(fecha_inicio, fecha_fin)
+        
         df = pd.DataFrame(registros_filtrados)
 
         # Crear el nombre del archivo con el formato deseado
-        nombre_archivo = f"{fecha_inicio.strftime('%Y-%m-%d')} - {fecha_fin.strftime('%Y-%m-%d')}.xlsx"
+        nombre_archivo = f"{fecha_inicio.strftime('%Y-%m-%d')} - {fecha_fin.strftime('%Y-%m-%d')}_internos.xlsx"
 
         # Forzar la descarga del archivo de Excel desde memoria
         excel_buffer = BytesIO()
         df.to_excel(excel_buffer, index=False)
         excel_buffer.seek(0)
         return send_file(excel_buffer, as_attachment=True, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', download_name=nombre_archivo)
+    elif request.args.get('filtrar_general') == 'True':
+        registros = database.obtener_registros_entre_fechas(fecha_inicio, fecha_fin)
+        tercero = database.obtener_tercero_entre_fechas(fecha_inicio, fecha_fin)
+        
+        # Crear DataFrames para registros y tercero
+        df_registros = pd.DataFrame(registros)
+        df_tercero = pd.DataFrame(tercero)
 
+        # Fusionar DataFrames manteniendo las mismas columnas
+        df_merged = pd.concat([df_registros, df_tercero], axis=0, ignore_index=True)
 
-    return render_template('registros_bd.html', registros=registros_filtrados, fecha_inicio=fecha_inicio.strftime('%Y-%m-%d'), fecha_fin=fecha_fin.strftime('%Y-%m-%d'))
+        # Ordenar por 'fecha' y 'hora_escaneo'
+        df_merged.sort_values(by=['fecha', 'hora_escaneo'], inplace=True)
+
+        # Llenar los valores NaN con 'N/A'
+        df_merged.fillna('N/A', inplace=True)
+
+        # Crear el nombre del archivo con el formato deseado
+        nombre_archivo = f"{fecha_inicio.strftime('%Y-%m-%d')} - {fecha_fin.strftime('%Y-%m-%d')}_terceros.xlsx"
+
+        # Forzar la descarga del archivo de Excel desde la memoria
+        excel_buffer = BytesIO()
+        df_merged.to_excel(excel_buffer, index=False)
+        excel_buffer.seek(0)
+        
+        # Enviar el archivo Excel como respuesta
+        return send_file(excel_buffer, as_attachment=True, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', download_name=nombre_archivo)
+
 
 @app.route('/crear_registro', methods=['GET', 'POST'])
 def crear_registro():
