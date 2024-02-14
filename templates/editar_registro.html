@@ -21,17 +21,17 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="nombre_usuario">Nombre:</label>
+                                <label class="form-label" for="nombre_usuario">Nombre:</label>
                                 <input type="text" id="nombre" name="rango" value="{{ registro.nombre }}" class="form-control" readonly>
                             </div>
                             <br>
                             <div class="form-group">
-                                <label for="identificacion_usuario">Identificación:</label>
+                                <label class="form-label" for="identificacion_usuario">Identificación:</label>
                                 <input type="text" id="identificacion" name="rango" value="{{ registro.identificacion }}" class="form-control" readonly>
                             </div>
                             <br>
                             <div class="form-group">
-                                <label for="rango">Vinculo:</label>
+                                <label class="form-label" for="rango">Vinculo:</label>
                                 <select id="area" name="area" class="form-control" data-width="auto" required>
                                     <option value="" disabled selected>Seleccione un vinculo</option>
                                     <option value="Administrativa" {% if registro.area == 'Administrativa' %} selected {% endif %}>Administrativa</option>
@@ -42,29 +42,29 @@
                             </div>
                             <br>
                             <div class="form-group">
-                                <label for="fecha">Fecha:</label>
+                                <label class="form-label" for="fecha">Fecha:</label>
                                 <input type="date" id="fecha" name="fecha" value="{{ registro.fecha }}" class="form-control" required>
                             </div>
                         </div>
                         <br>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="hora_escaneo">Hora Escaneo:</label>
+                                <label class="form-label" for="hora_escaneo">Hora Escaneo:</label>
                                 <input type="time" id="hora_escaneo" name="hora_escaneo" value="{{ registro.hora_escaneo }}" class="form-control" step="1"required>
                             </div>
                             <br>
                             <div class="form-group">
-                                <label for="hora_entrada">Hora Entrada:</label>
+                                <label class="form-label" for="hora_entrada">Hora Entrada:</label>
                                 <input type="time" id="hora_entrada" name="hora_entrada" value="{{ registro.hora_entrada }}" class="form-control" step="1" required>
                             </div>
                             <br>
                             <div class="form-group">
-                                <label for="hora_salida">Hora Salida:</label>
+                                <label class="form-label" for="hora_salida">Hora Salida:</label>
                                 <input type="time" id="hora_salida" name="hora_salida" value="{{ registro.hora_salida }}" class="form-control" step="1" required>
                             </div>
                             <br>
                             <div class="form-group">
-                                <label for="rango">Rango:</label>
+                                <label class="form-label" for="rango">Rango:</label>
                                 <input type="text" id="rango" name="rango" value="{{ registro.rango }}" class="form-control" required>
                             </div>
                         </div>

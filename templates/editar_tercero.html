@@ -60,17 +60,17 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label class="form-label" for="compañia" class="form-label">Compañía:</label>
+                            <label for="compañia" class="form-label">Compañía:</label>
                             <input type="text" id="compañia" name="compañia" value="{{ tercero.compañia }}" class="form-control" required>
                         </div>
                         <br>
                         <div class="form-group">
-                            <label class="form-label" for="motivo" class="form-label">Motivo:</label>
+                            <label for="motivo" class="form-label">Motivo:</label>
                             <input type="text" id="motivo" name="motivo" value="{{ tercero.motivo }}" class="form-control" required>
                         </div>
                         <br>
                         <div class="form-group">
-                            <label class="form-label" for="dependencia" class="form-label">Dependencia:</label>
+                            <label for="dependencia" class="form-label">Dependencia:</label>
                             <select id="dependencia" name="dependencia" class="form-control" data-width="auto" required>
                                 <option value="Administrativa" {% if tercero.area == 'Administrativa' %} selected {% endif %}>Administrativa</option>
                                 <option value="Gerencial" {% if tercero.area == 'Gerencial' %} selected {% endif %}>Gerencial</option>
@@ -80,7 +80,7 @@
                         </div>
                         <br>
                         <div class="form-group">
-                            <label class="form-label" for="recibe" class="form-label">Recibe:</label>
+                            <label for="recibe" class="form-label">Recibe:</label>
                             <select id="recibe" name="recibe" class="form-control w-100 bootstrap-select" data-width="auto" required data-live-search="true">
                                 <option value="{{ tercero.recibe}}">{{ tercero.recibe}}</option>
                                 {% for usuario in usuarios %}
@@ -90,12 +90,12 @@
                         </div>
                         <br>
                         <div class="form-group">
-                            <label class="form-label" for="arl" class="form-label">ARL:</label>
+                            <labelfor="arl" class="form-label">ARL:</label>
                             <input type="text" id="arl" name="arl" value="{{ tercero.arl }}" class="form-control" required>
                         </div>
                         <br>
                         <div class="form-group">
-                            <label class="form-label" for="equipo" class="form-label">Equipo:</label>
+                            <label for="equipo" class="form-label">Equipo:</label>
                             <select id="equipo" name="equipo" class="form-control" data-width="auto" required>
                                 <option value="Tablet" {% if tercero.equipo == 'Tablet' %} selected {% endif %}>Tablet</option>
                                 <option value="PC" {% if tercero.equipo == 'PC' %} selected {% endif %}>PC</option>

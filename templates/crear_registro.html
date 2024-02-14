@@ -23,7 +23,7 @@
                 <div class="row">
                   <div class="col-6">
                     <div class="form-group">
-                      <label for="nombre_usuario">Nombre:</label>
+                      <label class="form-label" for="nombre_usuario">Nombre:</label>
                       <select id="nombre_usuario" name="nombre" class="form-control w-100 bootstrap-select" data-width="auto" required data-live-search="true">
                         <option value="" disabled selected></option>
                         {% for usuario in usuarios %}
@@ -33,7 +33,7 @@
                     </div>
                     <br>
                     <div class="form-group">
-                      <label for="identificacion_usuario">Identificación:</label>
+                      <label class="form-label" for="identificacion_usuario">Identificación:</label>
                       <select id="identificacion_usuario" name="identificacion" class="form-control w-100 bootstrap-select" data-width="auto" required data-live-search="true">
                         <option value="" disabled selected></option>
                         {% for usuario in usuarios %}
@@ -43,7 +43,7 @@
                     </div>
                     <br>
                     <div class="form-group">
-                      <label for="area">Vinculo:</label>
+                      <label class="form-label" for="area">Vinculo:</label>
                       <select id="area" name="area" class="form-control w-100 bootstrap-select" data-width="auto" required data-live-search="true">
                         <option value="" disabled selected></option>
                         <option value="Administrativa">Administrativa</option>
@@ -88,6 +88,7 @@
                     </div>
                   </div>
                 </div>
+                <br>
                 <button type="submit" class="btn btn-primary">Crear Registro</button>
               </div>
             </div>
