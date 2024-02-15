@@ -281,6 +281,10 @@ def filtrar_registros():
         # Enviar el archivo Excel como respuesta
         return send_file(excel_buffer, as_attachment=True, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', download_name=nombre_archivo)
 
+    registros_filtrados = database.obtener_registros_entre_fechas(fecha_inicio, fecha_fin)
+    
+    return render_template('registros_bd.html', registros=registros_filtrados, fecha_inicio=fecha_inicio.strftime('%Y-%m-%d'), fecha_fin=fecha_fin.strftime('%Y-%m-%d'))
+
 
 @app.route('/crear_registro', methods=['GET', 'POST'])
 def crear_registro():
