@@ -1,8 +1,4 @@
 import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from email.mime.image import MIMEImage
-from email.mime.application import MIMEApplication
 import os
 from flask import Flask, render_template, url_for, flash, request, redirect, Response
 import cv2
@@ -25,30 +21,3 @@ def generar_qr(prefijo, identificacion, nombre):
     qr_path = f'static/qr_images/{prefijo}{identificacion}.png'
     qr.png(qr_path, scale=6)
     return qr_path, info_completa  # Devolver la ruta y la información completa
-
-# Función para enviar el correo electrónico
-def enviar_correo(destinatario, asunto, cuerpo, adjunto_path):
-    remitente = "sistemasmaestri@gmail.com"
-    password = "ugtdrarcnbgsxnbu"
-
-        # Configuración del servidor SMTP de Gmail
-    server = smtplib.SMTP('smtp.gmail.com', 587)
-    server.starttls()
-    server.login(remitente, password)
-
-    # Construir el mensaje del correo electrónico
-    mensaje = MIMEMultipart()
-    mensaje['From'] = remitente
-    mensaje['To'] = destinatario
-    mensaje['Subject'] = asunto
-
-    mensaje.attach(MIMEText(cuerpo, 'plain'))
-
-    # Adjuntar la imagen del código QR al mensaje
-    with open(adjunto_path, 'rb') as archivo_adjunto:
-        adjunto = MIMEImage(archivo_adjunto.read(), name='qr.png')
-        mensaje.attach(adjunto)
-
-    # Enviar el correo electrónico
-    server.sendmail(remitente, destinatario, mensaje.as_string())
-    server.quit()

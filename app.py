@@ -1,9 +1,5 @@
 import functools
 import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from email.mime.image import MIMEImage
-from email.mime.application import MIMEApplication
 import os
 from flask import Flask, render_template, url_for, flash, request, redirect, Response, send_file, session, Blueprint
 import cv2
@@ -97,8 +93,8 @@ def registrar():
 
 @app.route('/cerrar_sesion')
 def cerrar_sesion():
-    session.clear()  # Elimina todas las variables de sesión
-    return redirect(url_for('login_route'))  # Redirige al usuario a la página de inicio de sesión o a la página principal
+    session.clear() 
+    return redirect(url_for('login_route')) 
 
 @app.route('/generar', methods=['GET', 'POST'])
 @login_required
@@ -126,18 +122,14 @@ def generar():
             # Insertar datos en la tabla usuarios
             database.insertar_usuario(identificacion, nombre, area, destinatario, qr_path)
             
-            # Enviar el correo electrónico solo si se proporciona el correo
-            if destinatario:
-                enviar_correo(destinatario, "Codigo QR control de acceso Maestri Ontrack", f" Cordial saludo:\n\nTe informamos que el QR generado con la siguiente informacion ha sido registrado con exito!\n\nNombre: {nombre}\nArea: {area}\nIdentificación: {identificacion}\n\nA continuacion adjuntamos el codigo", qr_path)
-
-            if destinatario:
-                mensaje += f" Se ha enviado al correo: {destinatario}."
-                flash('QR generado correctamente', 'success')
+            flash('QR generado correctamente', 'success')
             return render_template('generar.html', mensaje=mensaje, qr_path=qr_path)
         except ValueError as e:
             mensaje = str(e)
             return render_template('generar.html', mensaje=mensaje)
     return render_template('generar.html')
+
+
 
 @app.route('/generar_externo', methods=['GET', 'POST'])
 @login_required
@@ -167,18 +159,14 @@ def generar_externo():
                 
             # Insertar datos en la tabla usuarios
             database.insertar_externo(identificacion, nombre, area, destinatario, compañia, motivo, dependencia, recibe, arl, equipo, qr_path)
-            
-            # Enviar el correo electrónico solo si se proporciona el correo
-            if destinatario:
-                enviar_correo(destinatario, "Codigo QR control de acceso Maestri Ontrack", f" Cordial saludo:\n\nTe informamos que el QR generado con la siguiente informacion ha sido registrado con exito!\n\nNombre: {nombre}\nVinculo: {area}\nIdentificación: {identificacion}\nCompañia que representa: {compañia}\nMotivo de la visita: {motivo}\nDependencia visitada:{dependencia}\nPersona que lo recibe: {recibe}\nArl: {arl}\nEquipo: {equipo}\n\nA continuacion adjuntamos el codigo", qr_path)
 
-            if destinatario:
-                flash('QR generado correctamente', 'success')
+            flash('QR generado correctamente', 'success')
             return render_template('generar_externo.html', mensaje= mensaje, qr_path=qr_path)
         except ValueError as e:
             return render_template('generar_externo.html')
     usuarios = database.obtener_usuarios()
     return render_template('generar_externo.html', usuarios=usuarios)
+
 
 @app.route('/externos')
 @login_required
