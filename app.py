@@ -10,7 +10,7 @@ import openpyxl as xl
 import time
 import pyqrcode
 from camera import generate_frames
-from qr import generar_qr, enviar_correo
+from qr import generar_qr
 import database
 import pandas as pd
 from io import BytesIO
