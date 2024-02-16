@@ -9,6 +9,25 @@ mydb = mysql.connector.connect(
     database="registros_qr"
 )
 
+def insertar_en_base_de_datos(correo, contraseña):
+    try:
+        
+        mycursor = mydb.cursor()
+
+        # Sentencia SQL para insertar un nuevo registro
+        sql = "INSERT INTO login (correo, password) VALUES (%s, %s)"
+        val = (correo, contraseña)
+        
+        mycursor.execute(sql, val)
+
+        # Confirmar la inserción de datos
+        mydb.commit()
+
+        print("Datos insertados correctamente en la tabla login.")
+        
+    except mysql.connector.Error as error:
+        print("Error al insertar datos en la tabla login:", error)
+
 def ejecutar_consulta_sql(query):
     try:
         # Conexión a la base de datos
@@ -38,6 +57,17 @@ def ejecutar_consulta_sql(query):
         print("Error al ejecutar la consulta SQL:", error)
         return None
     
+def login(query, params):
+    try:
+        cursor = mydb.cursor(dictionary=True)
+        cursor.execute(query, params)
+        return cursor.fetchall()
+    except mysql.connector.Error as error:
+        print("Error al ejecutar la consulta SQL:", error)
+        return None
+    finally:
+        cursor.close()
+        
 def guardar_registro_en_mysql(identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango):
     cursor = mydb.cursor()
     sql = "INSERT INTO registros (identificacion, nombre, area, fecha, hora_escaneo, hora_entrada, hora_salida, rango) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"

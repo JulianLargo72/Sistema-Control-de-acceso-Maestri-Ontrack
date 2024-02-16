@@ -1,10 +1,11 @@
+import functools
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 from email.mime.application import MIMEApplication
 import os
-from flask import Flask, render_template, url_for, flash, request, redirect, Response, send_file
+from flask import Flask, render_template, url_for, flash, request, redirect, Response, send_file, session, Blueprint
 import cv2
 from pyzbar.pyzbar import decode
 import numpy as np
@@ -21,13 +22,27 @@ from io import BytesIO
 
 app = Flask(__name__)
 app.secret_key = 'maestri'
+login_blueprint = Blueprint('login', __name__)
+
+def login_required(view):
+    @functools.wraps(view)
+    def wrapped_view(**kwargs):
+        if 'logueado' not in session or not session['logueado']:
+            return redirect(url_for('login_route'))
+        return view(**kwargs)
+    return wrapped_view
 
 @app.route('/leer')
+@login_required
 def mostrar_leer():
     return render_template('leer.html')
 
 @app.route('/')
 def inicio():
+    return render_template('login.html')
+
+@app.route('/index')
+def index():
     return render_template('index.html')
 
 areas = {
@@ -38,7 +53,55 @@ areas = {
     'T': 'Tercero'
 }
 
+@app.route('/acceso-login', methods=["GET", "POST"])
+def login_route():
+    if request.method == 'POST' and 'txtCorreo' in request.form and 'txtPassword' in request.form:
+        _correo = request.form['txtCorreo']
+        _password = request.form['txtPassword']
+
+        # Consulta SQL parametrizada
+        query = 'SELECT * FROM login WHERE correo = %s AND password = %s'
+        params = (_correo, _password)
+
+        # Llama a la función login para ejecutar la consulta
+        accounts = database.login(query, params)
+
+        if accounts:
+            session['logueado'] = True
+            session['id'] = accounts[0]['id']
+            return render_template("index.html")
+        else:
+            flash('Usuario o contraseña incorrectas', 'error')  # Mensaje de error usando flash
+            return render_template('login.html')
+            
+    return render_template('login.html')
+
+@app.route('/registrar', methods=['GET', 'POST'])
+@login_required
+def registrar():
+    if request.method == 'POST':
+        correo = request.form['txtcorreo']
+        contraseña = request.form['password']
+        
+        # Insertar en la base de datos
+        database.insertar_en_base_de_datos(correo, contraseña)
+        
+        # Mensaje de éxito
+        flash('¡Registro exitoso!', 'success')
+        
+        # Redireccionar a la página de inicio
+        return redirect(url_for('index'))
+    
+    return render_template('registro.html')
+
+
+@app.route('/cerrar_sesion')
+def cerrar_sesion():
+    session.clear()  # Elimina todas las variables de sesión
+    return redirect(url_for('login_route'))  # Redirige al usuario a la página de inicio de sesión o a la página principal
+
 @app.route('/generar', methods=['GET', 'POST'])
+@login_required
 def generar():
     if request.method == 'POST':
         try:
@@ -77,6 +140,7 @@ def generar():
     return render_template('generar.html')
 
 @app.route('/generar_externo', methods=['GET', 'POST'])
+@login_required
 def generar_externo():
     if request.method == 'POST':
         try:
@@ -117,6 +181,7 @@ def generar_externo():
     return render_template('generar_externo.html', usuarios=usuarios)
 
 @app.route('/externos')
+@login_required
 def mostrar_externos():
     # Obtener los datos de la tabla de externos
     externos = database.obtener_externos()
@@ -129,6 +194,7 @@ def mostrar_externos():
 
 
 @app.route('/editar_externo/<int:id_externo>', methods=['GET', 'POST'])
+@login_required
 def editar_externo(id_externo):
     if request.method == 'POST':
         try:
@@ -163,6 +229,7 @@ def editar_externo(id_externo):
 
 
 @app.route('/ver_externo/<int:id_externo>')
+@login_required
 def ver_externo(id_externo):
     externo = database.obtener_externo_por_id(id_externo)
     if externo:
@@ -194,11 +261,13 @@ def video_feed():
     return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
     
 @app.route('/usuarios')
+@login_required
 def mostrar_usuarios():
     usuarios = database.obtener_usuarios()
     return render_template('usuarios.html', usuarios=usuarios)
 
 @app.route('/ver_usuario/<int:id_usuario>')
+@login_required
 def ver_usuario(id_usuario):
     usuario = database.obtener_usuario_por_id(id_usuario)
     if usuario:
@@ -222,6 +291,7 @@ def eliminar_usuario(id_usuario):
     
     
 @app.route('/registros_bd')
+@login_required
 def mostrar_registros_bd():
     registros = database.obtener_registros()
     return render_template('registros_bd.html', registros=registros)
@@ -287,6 +357,7 @@ def filtrar_registros():
 
 
 @app.route('/crear_registro', methods=['GET', 'POST'])
+@login_required
 def crear_registro():
     if request.method == 'POST':
         identificacion = request.form['identificacion']
@@ -308,6 +379,7 @@ def crear_registro():
         return render_template('crear_registro.html', usuarios=usuarios)       
 
 @app.route('/editar_registro/<int:id_registro>', methods=['GET', 'POST'])
+@login_required
 def editar_registro(id_registro):
     if request.method == 'POST':
         # Obtener los datos del formulario de edición
@@ -457,7 +529,7 @@ def borrar_tercero_route(id_tercero):
     else:
         return "Método no permitido", 405
     
-
+app.register_blueprint(login_blueprint)
 
 if __name__ == '__main__':
-    app.run(host='192.168.0.44', port=5000, debug=True)
+    app.run(host='192.168.0.45', port=5000, debug=True)
