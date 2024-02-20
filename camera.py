@@ -3,7 +3,6 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 from email.mime.application import MIMEApplication
-import os
 from flask import Flask, render_template, url_for, flash, request, redirect, Response
 import cv2
 from pyzbar.pyzbar import decode
@@ -11,7 +10,6 @@ import numpy as np
 from datetime import datetime
 import openpyxl as xl
 import time
-import pyqrcode
 import database 
 
 mañana = []

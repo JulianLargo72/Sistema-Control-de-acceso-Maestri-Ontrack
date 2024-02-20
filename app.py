@@ -1,14 +1,12 @@
-import functools
-import smtplib
-import os
 from flask import Flask, render_template, url_for, flash, request, redirect, Response, send_file, session, Blueprint
 import cv2
 from pyzbar.pyzbar import decode
 import numpy as np
-from datetime import datetime, timedelta
 import openpyxl as xl
-import time
-import pyqrcode
+import pandas as pd
+from io import BytesIO
+import functools
+import smtplib
 from camera import generate_frames
 from qr import generar_qr
 import database

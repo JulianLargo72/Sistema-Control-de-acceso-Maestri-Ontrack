@@ -1,7 +1,6 @@
 import smtplib
 import os
 from flask import Flask, render_template, url_for, flash, request, redirect, Response
-import cv2
 from pyzbar.pyzbar import decode
 import numpy as np
 from datetime import datetime
